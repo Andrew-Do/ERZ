@@ -17,6 +17,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -65,10 +66,41 @@ public class EntityFallenKnight extends EntitySkeleton {
     if (attackVillagers) {
       targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(this, EntityVillager.class, false));
     }
- 
-    this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true));
+    tasks.addTask(4, getAiArrowAttack());
+  //  this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true));
   }
- 
+  private int fallenKnightRangedMinAttackPause = 20;
+  private boolean fallKnightMountedArchesMaintainDistance = true;
+  private int fallenKnightRangedMaxAttackPause = 60;
+  private float fallenKnightRangedMaxRange = 15f;
+  private final static boolean fallenKnightArchersSwitchToMelee = true;
+  private EntityAIMountedArrowAttack aiArrowAttack;
+  public EntityAIMountedArrowAttack getAiArrowAttack() {
+    if (aiArrowAttack == null) {
+      aiArrowAttack = new EntityAIMountedArrowAttack(this, 1.2f, EntityFallenMount.MOUNTED_ATTACK_MOVE_SPEED,
+          fallenKnightRangedMinAttackPause, fallenKnightRangedMaxAttackPause, fallenKnightRangedMaxRange,
+          fallKnightMountedArchesMaintainDistance);
+    }
+    return aiArrowAttack;
+  }
+  @Override
+  public void setCombatTask() {
+    tasks.removeTask(getAiAttackOnCollide());
+    tasks.removeTask(getAiArrowAttack());
+    if(isRanged()) {
+      tasks.addTask(4, getAiArrowAttack());
+    } else {
+      tasks.addTask(4, getAiAttackOnCollide());
+    }
+  }
+  private EntityAIMountedAttackOnCollide aiAttackOnCollide;
+  public EntityAIMountedAttackOnCollide getAiAttackOnCollide() {
+    if(aiAttackOnCollide == null) {
+      aiAttackOnCollide = new EntityAIMountedAttackOnCollide(this, EntityPlayer.class, 0.2F, EntityFallenMount.MOUNTED_ATTACK_MOVE_SPEED, false);
+    }
+    return aiAttackOnCollide;
+  }
+
   @Override
   protected SoundEvent getAmbientSound() {
     return SoundEvents.ENTITY_ZOMBIE_AMBIENT;
@@ -96,14 +128,26 @@ public class EntityFallenKnight extends EntitySkeleton {
     }
     firstUpdate = false;
     if (!isMounted == isRidingMount()) {
- 
+      getAiAttackOnCollide().resetTask();
+      getAiArrowAttack().resetTask();
+      
       getNavigator().clearPathEntity();
       isMounted = isRidingMount();
     }
 //    if (isBurning() && isRidingMount()) {
 //      //getRidingEntity().setFire(8);
 //    }
- 
+    if (fallenKnightArchersSwitchToMelee && !isMounted 
+        && getAttackTarget() != null && isRanged() && getDistanceSqToEntity(getAttackTarget()) < 5) {
+      
+
+      setItemStackToSlot(EntityEquipmentSlot.MAINHAND, getSwordForLevel(isHardDifficulty() ? 2 : 1));
+     // setItemStackToSlot(EntityEquipmentSlot.MAINHAND, getSwordForLevel(getRandomEquipmentLevel()));
+    }
+  }
+  private boolean isRanged() {
+    ItemStack itemstack = getHeldItem(EnumHand.MAIN_HAND);
+    return itemstack != null && itemstack.getItem() == Items.BOW;
   }
   private boolean isRidingMount() {
     return isRiding() && getRidingEntity().getClass() == EntityFallenMount.class;
@@ -162,7 +206,8 @@ public class EntityFallenKnight extends EntitySkeleton {
         }
       }
     }
-    setItemStackToSlot(EntityEquipmentSlot.MAINHAND, getSwordForLevel(isHardDifficulty() ? 2 : 1));
+    
+    setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
   }
  
   private int getRandomEquipmentLevel(float occupiedDiffcultyMultiplier) {

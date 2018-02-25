@@ -80,7 +80,7 @@ public class EntityFallenMount extends EntityHorse {
     return true;
   }
   @Override
-  public boolean canMateWith(EntityAnimal p_70878_1_) {
+  public boolean canMateWith(EntityAnimal a) {
     return false;
   }
   @Override
@@ -88,7 +88,7 @@ public class EntityFallenMount extends EntityHorse {
     return false;
   }
   @Override
-  public boolean isBreedingItem(ItemStack p_70877_1_) {
+  public boolean isBreedingItem(ItemStack i) {
     return false;
   }
   @Override
