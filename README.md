@@ -13,7 +13,7 @@ Desired ROTN Changes
 2. Done: The Sprite Projectile needs a clearer sound effect/slower travel time for quality of life (can replace empty sound files. can change speed in config)
 3. Done: Config to disable taming faeries with glowstone
 5. Done: [If possible] New AI/behavior for Guardian of Sprites: Faster at lower health (can change speed in config)
-4. Sound tweaks: for fairy, sprouts, sprite projectile, golem (can replace empty sound files)
+4. Done: Sound tweaks: for fairy, sprouts, sprite projectile, golem (can replace empty sound files)
 
 
 
