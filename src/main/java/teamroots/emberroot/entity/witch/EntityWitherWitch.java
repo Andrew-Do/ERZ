@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.witch;
-
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.EntityLivingBase;
@@ -49,7 +48,6 @@ import teamroots.emberroot.util.SpawnUtil;
  * Original author: https://github.com/CrazyPants
  */
 public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
-
   public static final String NAME = "witherwitch";
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityWitherWitch.class, EnumCreatureType.MONSTER);
   private int attackTimer;
@@ -60,18 +58,12 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
   private boolean firstUpdate = true;
   private final List<EntityWitherCat> cats = new ArrayList<EntityWitherCat>();
   private List<NBTTagCompound> loadedCats;
-  private EntityAIRangedAttack rangedAttackAI;
+  private final EntityAIRangedAttack rangedAttackAI;
   private int noActiveTargetTime;
-  public static int witherWitchMaxCats = 3;
-  public static int witherWitchMinCats = 1;
-
+  private int witherWitchMaxCats = 3;
+  private int witherWitchMinCats = 1;
   public EntityWitherWitch(World world) {
     super(world);
-  }
-
-  @Override
-  protected void initEntityAI() {
-    super.initEntityAI();
     rangedAttackAI = new EntityAIRangedAttack(this, 1, 60, 10);
     tasks.addTask(1, new EntityAISwimming(this));
     tasks.addTask(2, rangedAttackAI);
@@ -81,14 +73,12 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
     targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, true));
   }
-
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
-    //    getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.22D);
+    getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.22D);
     ConfigSpawnEntity.syncInstance(this, config.settings);
   }
-
   @Override
   protected float applyPotionDamageCalculations(DamageSource damageSource, float damage) {
     //same as a vanilla witch
@@ -101,33 +91,27 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     }
     return damage;
   }
-
   @Override
   public boolean isPotionApplicable(PotionEffect potion) {
     //    if(potion.getPotion().isBadEffect())
     //TODO: make witch immune to ALL bad effect?s? WE COULD ?> yeah
     return potion.getPotion() != MobEffects.WITHER && super.isPotionApplicable(potion);
   }
-
   @Override
   public void setRevengeTarget(EntityLivingBase target) {
     EntityLivingBase curTarget = this.getAttackTarget();
     super.setRevengeTarget(target);
-    if (curTarget == target || world.isRemote || target == null) {
-      return;
-    }
+    if (curTarget == target || world.isRemote || target == null) { return; }
     float distToSrc = getDistanceToEntity(target);
     if (distToSrc > getNavigator().getPathSearchRange() && distToSrc < 50) {
       getAttributeMap().getAttributeInstance(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(distToSrc + 2);
     }
   }
-
   @Override
   public IEntityLivingData onInitialSpawn(DifficultyInstance di, IEntityLivingData livingData) {
     spawned = true;
     return super.onInitialSpawn(di, livingData);
   }
-
   @Override
   public void onLivingUpdate() {
     if (world.isRemote) {
@@ -147,7 +131,6 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     manageCats();
     super.onLivingUpdate();
   }
-
   protected void doAttackActions() {
     attackTimer--;
     healTimer--;
@@ -192,7 +175,6 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       isHealing = false;
     }
   }
-
   protected EntityLivingBase getActiveTarget() {
     EntityLivingBase res = getAttackTarget();
     if (res == null) {
@@ -200,14 +182,10 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     }
     return res;
   }
-
   protected boolean shouldStartHeal() {
-    if (isPotionActive(MobEffects.REGENERATION)) {
-      return false;
-    }
+    if (isPotionActive(MobEffects.REGENERATION)) { return false; }
     return getHealth() < getMaxHealth() * 0.75 && rand.nextFloat() > 0.5 && healTimer <= 0;
   }
-
   @Override
   public void attackEntityWithRangedAttack(EntityLivingBase entity, float rangeRatio) {
     //the EntityPotion class validates if this potion is throwable, and if not it logs error "ThrownPotion entity {} has no item?!
@@ -232,7 +210,6 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
     }
   }
-
   protected void throwHealthPotion() {
     ItemStack potion = getHeldItem(EnumHand.MAIN_HAND);
     //if its not a splash or lingering potion it will be an error
@@ -243,15 +220,13 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
     healTimer = 80;
   }
-
   public void catDied(EntityWitherCat cat) {
     cats.remove(cat);
   }
-
   private void spawnCats() {
-    if (witherWitchMaxCats <= 0) {
-      return;
-    }
+    //    if(!Config.witherCatEnabled) {
+    //      return;
+    //    }
     int numCats = rand.nextInt(witherWitchMaxCats + 1);
     numCats = Math.max(numCats, witherWitchMinCats);
     for (int i = 0; i < numCats; i++) {
@@ -263,32 +238,24 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
         spawnCat(spawnLoc);
       }
       else {
-        break;
+        return;
       }
     }
   }
-
   private void spawnCat(Point3i spawnLoc) {
     EntityWitherCat cat = new EntityWitherCat(world);
     cat.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(this)), null);
     cat.setOwner(this);
     cat.setPositionAndRotation(spawnLoc.x + 0.5, spawnLoc.y + 0.5, spawnLoc.z + 0.5, rotationYaw, 0);
-    if (MinecraftForge.EVENT_BUS.post(new LivingSpawnEvent.CheckSpawn(cat, world, (float) cat.posX, (float) cat.posY, (float) cat.posZ))) {
-      return;
-    }
-    if (!cat.getCanSpawnHere()) {
-      return;
-    }
+    if (MinecraftForge.EVENT_BUS.post(new LivingSpawnEvent.CheckSpawn(cat, world, (float) cat.posX, (float) cat.posY, (float) cat.posZ))) { return; }
+    if (!cat.getCanSpawnHere()) { return; }
     cats.add(cat);
     world.spawnEntity(cat);
   }
-
   @Override
   public void writeEntityToNBT(NBTTagCompound root) {
     super.writeEntityToNBT(root);
-    if (cats.isEmpty()) {
-      return;
-    }
+    if (cats.isEmpty()) { return; }
     NBTTagList catsList = new NBTTagList();
     for (EntityWitherCat cat : cats) {
       if (!cat.isDead) {
@@ -301,13 +268,10 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       root.setTag("cats", catsList);
     }
   }
-
   @Override
   public void readEntityFromNBT(NBTTagCompound root) {
     super.readEntityFromNBT(root);
-    if (!root.hasKey("cats")) {
-      return;
-    }
+    if (!root.hasKey("cats")) { return; }
     NBTTagList catsList = (NBTTagList) root.getTag("cats");
     loadedCats = new ArrayList<NBTTagCompound>(catsList.tagCount());
     for (int i = 0; i < catsList.tagCount(); i++) {
@@ -317,11 +281,8 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       }
     }
   }
-
   private void loadCats() {
-    if (loadedCats == null) {
-      return;
-    }
+    if (loadedCats == null) { return; }
     for (NBTTagCompound catRoot : loadedCats) {
       if (catRoot != null) {
         EntityWitherCat cat = new EntityWitherCat(world);
@@ -332,11 +293,8 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       }
     }
   }
-
   protected void manageCats() {
-    if (cats.isEmpty()) {
-      return;
-    }
+    if (cats.isEmpty()) { return; }
     if (noActiveTargetTime > 40) {
       pacifyCats();
       return;
@@ -349,7 +307,6 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     }
     angerCats(currentTarget, hitBy);
   }
-
   private void angerCats(EntityLivingBase targ, EntityLivingBase hitBy) {
     for (EntityWitherCat cat : cats) {
       if (cat.isAngry()) {
@@ -362,7 +319,6 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       }
     }
   }
-
   private void pacifyCats() {
     for (EntityWitherCat cat : cats) {
       if (cat.isAngry()) {
@@ -373,10 +329,8 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       }
     }
   }
-
   @Override
   public void setSwingingArms(boolean swingingArms) {}
-
   @Override
   public ResourceLocation getLootTable() {
     //    String colour = getVariantEnum().nameLower();

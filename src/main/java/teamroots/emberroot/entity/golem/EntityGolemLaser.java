@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.golem;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -18,8 +16,6 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,7 +24,6 @@ import teamroots.emberroot.proxy.ClientProxy;
 import teamroots.emberroot.proxy.CommonProxy;
 
 public class EntityGolemLaser extends Entity {
-
   public static final DataParameter<Float> value = EntityDataManager.createKey(EntityGolemLaser.class, DataSerializers.FLOAT);
   public static final DataParameter<Boolean> dead = EntityDataManager.createKey(EntityGolemLaser.class, DataSerializers.BOOLEAN);
   public static final DataParameter<Integer> lifetime = EntityDataManager.createKey(EntityGolemLaser.class, DataSerializers.VARINT);
@@ -36,7 +31,6 @@ public class EntityGolemLaser extends Entity {
   public BlockPos dest = new BlockPos(0, 0, 0);
   public UUID id = null;
   BlockPos pos = new BlockPos(0, 0, 0);
-
   //private Color colour = null;//new Color(0, 0, 0);
   public EntityGolemLaser(World worldIn) {
     super(worldIn);
@@ -46,7 +40,6 @@ public class EntityGolemLaser extends Entity {
     this.getDataManager().register(dead, false);
     this.getDataManager().register(lifetime, Integer.valueOf(160));
   }
-
   public void initCustom(double x, double y, double z, double vx, double vy, double vz, double value, UUID playerId) {
     this.posX = x;
     this.posY = y;
@@ -60,10 +53,8 @@ public class EntityGolemLaser extends Entity {
     setSize((float) value / 10.0f, (float) value / 10.0f);
     this.id = playerId;
   }
-
   @Override
   protected void entityInit() {}
-
   @Override
   protected void readEntityFromNBT(NBTTagCompound compound) {
     getDataManager().set(EntityGolemLaser.value, compound.getFloat("value"));
@@ -72,7 +63,6 @@ public class EntityGolemLaser extends Entity {
       id = new UUID(compound.getLong("UUIDmost"), compound.getLong("UUIDleast"));
     }
   }
-
   @Override
   protected void writeEntityToNBT(NBTTagCompound compound) {
     compound.setFloat("value", getDataManager().get(value));
@@ -81,12 +71,6 @@ public class EntityGolemLaser extends Entity {
       compound.setLong("UUIDleast", id.getLeastSignificantBits());
     }
   }
-
-  //  @Override
-  //  protected void onImpact(RayTraceResult mop) {
-  //    
-  //    
-  //  }
   @Override
   public void onUpdate() {
     super.onUpdate();
@@ -100,21 +84,6 @@ public class EntityGolemLaser extends Entity {
       this.setDead();
     }
     if (!getDataManager().get(dead)) {
-      Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ);
-      Vec3d vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-      RayTraceResult raytraceresult = this.world.rayTraceBlocks(vec3d, vec3d1);
-      if (raytraceresult != null) {
-        if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && this.world.getBlockState(raytraceresult.getBlockPos()).getBlock() == Blocks.PORTAL) {
-          this.setPortal(raytraceresult.getBlockPos());
-        }
-        else {
-          //              if(!net.minecraftforge.common.ForgeHooks.onThrowableImpact(this, raytraceresult))
-          //             EmberRootZoo.log("LASER IMPACT YOOOO");
-          getEntityWorld().removeEntity(this);
-          this.setDead();
-          return;
-        }
-      }
       getDataManager().set(value, getDataManager().get(value) - 0.025f);
       if (getDataManager().get(value) <= 0) {
         getEntityWorld().removeEntity(this);
@@ -183,27 +152,21 @@ public class EntityGolemLaser extends Entity {
       motionZ = 0;
     }
   }
-
   private Color getColor() {
     EntityAncientGolem.VariantColors var = EntityAncientGolem.VariantColors.values()[getDataManager().get(variant)];
     return var.getColor();
   }
-
   private int getBlue() {
     return getColor().getBlue();
   }
-
   private int getGreen() {
     return getColor().getGreen();
   }
-
   private int getRed() {
     return getColor().getRed();
   }
-
   private static Random random = new Random();
   private static int counter = 0;
-
   @SideOnly(Side.CLIENT)
   private static void spawnParticleGlow(World world, float x, float y, float z, float vx, float vy, float vz, float r, float g, float b, float scale, int lifetime) {
     counter += random.nextInt(3);

@@ -1,5 +1,4 @@
 package teamroots.emberroot.util;
-
 import java.util.Random;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -15,21 +14,17 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 public class TeleportUtil {
-
   private static final int DEFAULT_RND_TP_DISTANCE = 16;
   private static Random rand = new Random();
-
   public static boolean teleportRandomly(EntityLivingBase entity, int distance) {
     double d0 = entity.posX + (rand.nextDouble() - 0.5D) * distance;
     double d1 = entity.posY + rand.nextInt(distance + 1) - distance / 2;
     double d2 = entity.posZ + (rand.nextDouble() - 0.5D) * distance;
     return teleportTo(entity, d0, d1, d2, false);
   }
-
   public static boolean teleportRandomly(EntityLivingBase entity) {
     return teleportRandomly(entity, DEFAULT_RND_TP_DISTANCE);
   }
-
   public static boolean teleportToEntity(EntityLivingBase entity, Entity toEntity) {
     Vec3d vec3 = new Vec3d(entity.posX - toEntity.posX,
         entity.getEntityBoundingBox().minY + entity.height / 2.0F - toEntity.posY + toEntity.getEyeHeight(), entity.posZ - toEntity.posZ);
@@ -40,13 +35,10 @@ public class TeleportUtil {
     double d3 = entity.posZ + (rand.nextDouble() - 0.5D) * 8.0D - vec3.z * d0;
     return teleportTo(entity, d1, d2, d3, false);
   }
-
   public static boolean teleportTo(EntityLivingBase entity, double x, double y, double z, boolean fireEndermanEvent) {
     EnderTeleportEvent event = new EnderTeleportEvent(entity, x, y, z, 0);
     if (fireEndermanEvent) {
-      if (MinecraftForge.EVENT_BUS.post(event)) {
-        return false;
-      }
+      if (MinecraftForge.EVENT_BUS.post(event)) { return false; }
     }
     double origX = entity.posX;
     double origY = entity.posY;

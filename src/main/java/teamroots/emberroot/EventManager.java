@@ -1,5 +1,4 @@
 package teamroots.emberroot;
-
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.state.BlockWorldState;
 import net.minecraft.block.state.pattern.BlockPattern;
@@ -35,12 +34,10 @@ import teamroots.emberroot.proxy.ClientProxy;
 import teamroots.emberroot.util.IRenderEntityLater;
 
 public class EventManager {
-
   @SubscribeEvent
   public void onBlockPlace(PlaceEvent event) {
     trySpawnBoss(event.getWorld(), event.getPos());
   }
-
   private void trySpawnBoss(World worldIn, BlockPos pos) {
     BlockPattern pattern = EntitySpriteGuardianBoss.getGolemPattern();
     BlockPattern.PatternHelper blockpattern$patternhelper = pattern.match(worldIn, pos);
@@ -90,9 +87,7 @@ public class EventManager {
       }
     }
   }
-
   public static long ticks = 0;
-
   @SideOnly(Side.CLIENT)
   @SubscribeEvent
   public void onTextureStitch(TextureStitchEvent event) {
@@ -104,7 +99,6 @@ public class EventManager {
     event.getMap().registerSprite(particleStar);
     event.getMap().registerSprite(ParticleGolemLaser.texture);
   }
-
   @SideOnly(Side.CLIENT)
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   public void onTick(TickEvent.ClientTickEvent event) {
@@ -113,7 +107,6 @@ public class EventManager {
       ticks++;
     }
   }
-
   @SideOnly(Side.CLIENT)
   public static void renderEntityStatic(Entity entityIn, float partialTicks, boolean b, Render render) {
     if (entityIn.ticksExisted == 0) {
@@ -135,10 +128,8 @@ public class EventManager {
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     ((IRenderEntityLater) render).renderLater(entityIn, -TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY, -TileEntityRendererDispatcher.staticPlayerZ, f, partialTicks);
   }
-
   static float tickCounter = 0;
   static EntityPlayer clientPlayer = null;
-
   @SubscribeEvent
   @SideOnly(Side.CLIENT)
   public void onRenderAfterWorld(RenderWorldLastEvent event) {
@@ -162,7 +153,6 @@ public class EventManager {
     }
     //OpenGlHelper.glUseProgram(0);
   }
-
   /**
    * Witchery Author Tribute
    * 

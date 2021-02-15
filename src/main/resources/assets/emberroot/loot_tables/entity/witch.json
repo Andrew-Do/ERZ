@@ -1,7 +1,7 @@
 {
     "pools": [
         {
-            "name": "main",
+			"name": "main",
             "rolls": 2,
             "entries": [
                 {
@@ -12,7 +12,7 @@
                             "function": "set_count",
                             "count": {
                                 "min": 0,
-                                "max": 2
+                                "max": 1
                             }
                         }
                     ]
@@ -25,7 +25,7 @@
                             "function": "set_count",
                             "count": {
                                 "min": 0,
-                                "max": 2
+                                "max": 1
                             }
                         }
                     ]
@@ -38,30 +38,34 @@
                             "function": "set_count",
                             "count": {
                                 "min": 0,
-                                "max": 2
+                                "max": 1
                             }
                         }
                     ]
                 }
             ]
-        },
-        {
-            "name": "main0",
-            "conditions": [
+        }
+        ,{
+             "conditions": [
                 {
                     "condition": "killed_by_player"
                 },
                 {
                     "condition": "random_chance_with_looting",
-                    "chance": 0.025,
-                    "looting_multiplier": 0.5
+                    "chance": 0.25,
+                    "looting_multiplier": 0.01
                 }
             ],
             "rolls": 1,
             "entries": [
                 {
                     "type": "item",
-                    "name": "minecraft:glowstone"
+                    "name": "minecraft:glowstone",
+                    "weight": 1
+                }, {
+                    "type": "item",
+                    "name": "minecraft:redstone",
+                    "weight": 1
                 }
             ]
         }

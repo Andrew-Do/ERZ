@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.spritegreater;
-
 import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
@@ -13,7 +12,6 @@ import teamroots.emberroot.EmberRootZoo;
 import teamroots.emberroot.util.Util;
 
 public class EntitySpriteProjectile extends EntityFlying {// implements IRangedAttackMob {
-
   public static final String NAME = "rootsonespriteprojectile";
   public float range = 64;
   public float addDirectionX = 0;
@@ -23,7 +21,6 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
   Random random = new Random();
   EntityLivingBase target = null;
   public float damage = 2.0f;
-
   public EntitySpriteProjectile(World worldIn) {
     super(worldIn);
     this.noClip = true;
@@ -31,17 +28,14 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
     this.isAirBorne = true;
     this.setInvisible(true);
   }
-
   public void initSpecial(EntityLivingBase target, float damage) {
     this.target = target;
     this.damage = damage;
   }
-
   @Override
   public boolean isEntityInvulnerable(DamageSource source) {
     return false;
   }
-
   @Override
   public void collideWithEntity(Entity entity) {
     if (Math.abs(entity.posX - posX) < 0.5 && Math.abs(entity.posY + entity.getEyeHeight() / 2.0 - posY) < 0.5 && Math.abs(entity.posZ - posZ) < 0.5) {
@@ -56,12 +50,10 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
       }
     }
   }
-
   @Override
   public void updateAITasks() {
     super.updateAITasks();
   }
-
   @Override
   public void onUpdate() {
     super.onUpdate();
@@ -84,12 +76,10 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
       }
     }
   }
-
   @Override
   public int getBrightnessForRender() {
     return 255;
   }
-
   @Override
   public boolean attackEntityFrom(DamageSource source, float amount) {
     this.setDead();
@@ -106,7 +96,6 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
     //		}
     return false;
   }
-
   @Override
   public boolean attackEntityAsMob(Entity entity) {
     this.setDead();
@@ -115,7 +104,6 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
     }
     return false;
   }
-
   @Override
   public void damageEntity(DamageSource source, float amount) {
     this.setDead();
@@ -123,17 +111,14 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
       EmberRootZoo.proxy.spawnParticleMagicSparkleFX(getEntityWorld(), posX, posY + height / 2.0f, posZ, Math.pow(0.95f * (random.nextFloat() - 0.5f), 3.0), Math.pow(0.95f * (random.nextFloat() - 0.5f), 3.0), Math.pow(0.95f * (random.nextFloat() - 0.5f), 3.0), 107, 255, 28);
     }
   }
-
   @Override
   public boolean isAIDisabled() {
     return false;
   }
-
   @Override
   protected boolean canDespawn() {
     return true;
   }
-
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
@@ -143,12 +128,10 @@ public class EntitySpriteProjectile extends EntityFlying {// implements IRangedA
     this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
     this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
   }
-
   @Override
   public void onLivingUpdate() {
     super.onLivingUpdate();
   }
-
   @Override
   public void readEntityFromNBT(NBTTagCompound compound) {
     super.readEntityFromNBT(compound);

@@ -1,10 +1,14 @@
 package teamroots.emberroot;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
@@ -73,17 +77,14 @@ import teamroots.emberroot.entity.wolftimber.RenderTimberWolf;
 import teamroots.emberroot.util.Util;
 
 public class RegistryManager {
-
   public static int intColor(int r, int g, int b) {
     return (r * 65536 + g * 256 + b);
   }
-
   public static void registerAll() {
     registerDamageSources();
     registerEntities();
     registerSpawning();
   }
-
   public static void registerSpawning() {
     List<Biome> allBiomes = new ArrayList<Biome>();
     for (BiomeEntry b : BiomeManager.getBiomes(BiomeType.COOL)) {
@@ -100,9 +101,7 @@ public class RegistryManager {
     }
     allBiomes.addAll(BiomeManager.oceanBiomes);
     for (ConfigSpawnEntity cfg : ConfigManager.entityConfigs) {
-      EmberRootZoo.log("entity " + cfg.entityClass.getName() + System.lineSeparator() + cfg.toString());
       if (cfg.settings.weightedProb <= 0 || cfg.settings.max <= 0) {
-        EmberRootZoo.log("entity " + cfg.entityClass.getName() + " Has been disabled from spawning fully");
         continue;
       }
       if (cfg.settings.useAllBiomes) {
@@ -113,7 +112,6 @@ public class RegistryManager {
       }
     }
   }
-
   public static void registerEntities() {
     int id = 0;
     EntityRegistry.registerModEntity(new ResourceLocation(Const.MODID, EntityDeer.NAME), EntityDeer.class, EntityDeer.NAME, id++, EmberRootZoo.instance, 64, 1, true);
@@ -149,7 +147,7 @@ public class RegistryManager {
     EntityRegistry.registerModEntity(new ResourceLocation(Const.MODID, EntityFallenMount.NAME), EntityFallenMount.class, EntityFallenMount.NAME, id++, EmberRootZoo.instance, 64, 1, true);
     EntityRegistry.registerEgg(new ResourceLocation(Const.MODID, EntityFallenMount.NAME), 0x365A25, 0xA0A0A0);
     EntityRegistry.registerModEntity(new ResourceLocation(Const.MODID, EntityTimberWolf.NAME), EntityTimberWolf.class, EntityTimberWolf.NAME, id++, EmberRootZoo.instance, 64, 1, true);
-    EntityRegistry.registerEgg(new ResourceLocation(Const.MODID, EntityTimberWolf.NAME), 0x708090, 0xD3D3D3);
+    EntityRegistry.registerEgg(new ResourceLocation(Const.MODID, EntityTimberWolf.NAME), 0x696969, 0xA5A5A5);
     EntityRegistry.registerModEntity(new ResourceLocation(Const.MODID, EntitySprite.NAME), EntitySprite.class, EntitySprite.NAME, id++, EmberRootZoo.instance, 64, 1, true);
     EntityRegistry.registerEgg(new ResourceLocation(Const.MODID, EntitySprite.NAME), Util.intColor(130, 255, 60), Util.intColor(130, 255, 60));
     EntityRegistry.registerModEntity(new ResourceLocation(Const.MODID, EntitySpriteling.NAME), EntitySpriteling.class, EntitySpriteling.NAME, id++, EmberRootZoo.instance, 64, 1, true);
@@ -160,13 +158,12 @@ public class RegistryManager {
     EntityRegistry.registerModEntity(new ResourceLocation(Const.MODID, EntitySpriteGuardianBoss.NAME), EntitySpriteGuardianBoss.class, EntitySpriteGuardianBoss.NAME, id++, EmberRootZoo.instance, 64, 1, true);
     EntityRegistry.registerEgg(new ResourceLocation(Const.MODID, EntitySpriteGuardianBoss.NAME), Util.intColor(120, 245, 50), Util.intColor(160, 255, 60));
     EntityRegistry.registerModEntity(new ResourceLocation(Const.MODID, EntityFrozenKnight.NAME), EntityFrozenKnight.class, EntityFrozenKnight.NAME, id++, EmberRootZoo.instance, 64, 1, true);
-    EntityRegistry.registerEgg(new ResourceLocation(Const.MODID, EntityFrozenKnight.NAME), intColor(87, 58, 134), 0xA0A0A0);
+    EntityRegistry.registerEgg(new ResourceLocation(Const.MODID, EntityFrozenKnight.NAME), intColor(87,58,134), 0xA0A0A0);
+   
   }
-
   public static void registerDamageSources() {
     EmberRootZoo.damage_ember = new DamageGolem();
   }
-
   @SideOnly(Side.CLIENT)
   @SubscribeEvent
   public void registerRendering(ModelRegistryEvent event) {
@@ -200,30 +197,89 @@ public class RegistryManager {
     RenderingRegistry.registerEntityRenderingHandler(EntitySpriteGuardianBoss.class, new RenderSpriteGuardian.Factory());
     RenderingRegistry.registerEntityRenderingHandler(EntityFrozenKnight.class, new RenderFrozenKnight.Factory());
   }
-
-  private List<SoundEvent> sounds = new ArrayList<SoundEvent>();
-  private List<Item> items = new ArrayList<Item>();
-
-  public SoundEvent registerSound(String name) {
-    final ResourceLocation res = new ResourceLocation(Const.MODID, name);//new ResourceLocation(Const.MODID, "sounds/" + UtilSound.Own.crackle+".ogg");
-    SoundEvent sound = new SoundEvent(res);
-    sound.setRegistryName(res);
-    sounds.add(sound);
-    return sound;
+  private void addRecipes() {
+    //    ResourceLocation rl;
+    //    //OreDictionary.registerOre("sand", new ItemStack(Blocks.SAND, 1, OreDictionary.WILDCARD_VALUE));//sand is already in dict by default
+    //    if (Config.confusingChargeEnabled) {
+    //      ItemStack cc = new ItemStack(blockConfusingCharge);
+    //      rl = new ResourceLocation(MODID, "recipe" + resourceLocationCounter);
+    //      addRecipe(new ShapedOreRecipe(rl, cc, "csc", "sgs", "csc", 'c', itemConfusingDust, 's', "sand", 'g', Items.GUNPOWDER), rl);
+    //      resourceLocationCounter++;
+    //    }
+    //    if (Config.enderChargeEnabled) {
+    //      ItemStack cc = new ItemStack(blockEnderCharge);
+    //      rl = new ResourceLocation(MODID, "recipe" + resourceLocationCounter);
+    //      addRecipe(new ShapedOreRecipe(rl, cc, "csc", "sgs", "csc", 'c', itemEnderFragment, 's', "sand", 'g', Items.GUNPOWDER), rl);
+    //      resourceLocationCounter++;
+    //    }
+    //    if (Config.concussionChargeEnabled) {
+    //      ItemStack cc = new ItemStack(blockConcussionCharge);
+    //      rl = new ResourceLocation(MODID, "recipe" + resourceLocationCounter);
+    //      addRecipe(new ShapedOreRecipe(rl, cc, "eee", "sgs", "ccc", 'c', itemConfusingDust, 'e', itemEnderFragment, 's', "sand", 'g', Items.GUNPOWDER), rl);
+    //      resourceLocationCounter++;
+    //    }
+    //    rl = new ResourceLocation(MODID, "recipe" + resourceLocationCounter);
+    //    addRecipe(new ShapedOreRecipe(rl, new ItemStack(Items.ENDER_PEARL), " f ", "fff", " f ", 'f', itemEnderFragment), rl);
+    //    resourceLocationCounter++;
   }
-
+  private int resourceLocationCounter = 0;
+  private List<IRecipe> recipes = new ArrayList<IRecipe>();
+  List<Item> items = new ArrayList<Item>();
+  private List<Block> blocks = new ArrayList<Block>();
+  private List<Enchantment> enchants = new ArrayList<Enchantment>();
+  private List<SoundEvent> sounds = new ArrayList<SoundEvent>();
+  private List<Potion> potionlist = new ArrayList<Potion>();
+  private List<PotionType> potiontype = new ArrayList<PotionType>();
+  private void addRecipe(IRecipe r, ResourceLocation rl) {
+    r.setRegistryName(rl);
+    this.recipes.add(r);
+  }
   public void register(Item r) {
     this.items.add(r);
   }
-
+  public void register(Block r) {
+    this.blocks.add(r);
+  }
+  public void register(Enchantment r) {
+    this.enchants.add(r);
+  }
+  public void register(SoundEvent r) {
+    r.setRegistryName(r.getSoundName());
+    this.sounds.add(r);
+  }
+  public void register(Potion r) {
+    this.potionlist.add(r);
+  }
+  public void register(PotionType r) {
+    this.potiontype.add(r);
+  }
+  @SubscribeEvent
+  public void onRegisterRecipe(RegistryEvent.Register<IRecipe> event) {
+    event.getRegistry().registerAll(this.recipes.toArray(new IRecipe[0]));
+  }
+  @SubscribeEvent
+  public void onRegisterItems(RegistryEvent.Register<Item> event) {
+    event.getRegistry().registerAll(this.items.toArray(new Item[0]));
+    addRecipes();
+  }
+  @SubscribeEvent
+  public void onRegisterBlocks(RegistryEvent.Register<Block> event) {
+    event.getRegistry().registerAll(this.blocks.toArray(new Block[0]));
+  }
+  @SubscribeEvent
+  public void onRegisterEnchantments(RegistryEvent.Register<Enchantment> event) {
+    event.getRegistry().registerAll(this.enchants.toArray(new Enchantment[0]));
+  }
   @SubscribeEvent
   public void onRegisterSoundEvent(RegistryEvent.Register<SoundEvent> event) {
     event.getRegistry().registerAll(this.sounds.toArray(new SoundEvent[0]));
   }
-
   @SubscribeEvent
-  public void onRegisterItems(RegistryEvent.Register<Item> event) {
-    event.getRegistry().registerAll(this.items.toArray(new Item[0]));
-    //    addRecipes();
+  public void onRegisterPotion(RegistryEvent.Register<Potion> event) {
+    event.getRegistry().registerAll(this.potionlist.toArray(new Potion[0]));
+  }
+  @SubscribeEvent
+  public void onRegisterPotionType(RegistryEvent.Register<PotionType> event) {
+    event.getRegistry().registerAll(this.potiontype.toArray(new PotionType[0]));
   }
 }

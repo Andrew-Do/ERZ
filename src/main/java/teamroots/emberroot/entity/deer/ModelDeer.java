@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.deer;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -8,7 +7,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.util.math.Vec3d;
 
 public class ModelDeer extends ModelBase {
-
   public static ModelDeer instance;
   //fields
   ModelRenderer head;
@@ -29,7 +27,6 @@ public class ModelDeer extends ModelBase {
   ModelRenderer horn6;
   ModelRenderer horn7;
   ModelRenderer horn8;
-
   public ModelDeer() {
     textureWidth = 64;
     textureHeight = 64;
@@ -144,7 +141,6 @@ public class ModelDeer extends ModelBase {
     horn8.mirror = true;
     setRotation(horn8, 0F, 0.1745329F, 0.7853982F);
   }
-
   public void render(Entity entity, float f, float f1, float age, float f3, float f4, float f5) {
     GlStateManager.pushMatrix();
     float speed = (float) Math.min(0.25f, ((new Vec3d(entity.motionX, 0, entity.motionZ)).lengthVector() * 4.0f));
@@ -180,13 +176,11 @@ public class ModelDeer extends ModelBase {
     }
     GlStateManager.popMatrix();
   }
-
   private void setRotation(ModelRenderer model, float x, float y, float z) {
     model.rotateAngleX = x;
     model.rotateAngleY = y;
     model.rotateAngleZ = z;
   }
-
   public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5) {
     super.setRotationAngles(f, f1, f2, f3, f4, f5, null);
   }

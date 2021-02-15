@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.spriteguardian;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,8 +17,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -33,19 +30,15 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import teamroots.emberroot.Const;
 import teamroots.emberroot.EmberRootZoo;
 import teamroots.emberroot.entity.sprite.EntitySprite;
 import teamroots.emberroot.entity.spritegreater.EntityGreaterSprite;
 import teamroots.emberroot.entity.spritegreater.EntitySpriteProjectile;
-import teamroots.emberroot.util.EntityUtil;
 import teamroots.emberroot.util.Util;
 
 public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRangedAttackMob {
-
-  private static final int RANGE_ATTACK = 72;
   public float range = 64;
   public ArrayList<Vec3d> pastPositions = new ArrayList<Vec3d>();
   public static final DataParameter<Float> targetDirectionX = EntityDataManager.<Float> createKey(EntitySpriteGuardianBoss.class, DataSerializers.FLOAT);
@@ -62,11 +55,10 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
   Random random = new Random();
   public Vec3d moveVec = new Vec3d(0, 0, 0);
   public Vec3d prevMoveVec = new Vec3d(0, 0, 0);
-  public static SoundEvent ambientSound;
-  public static SoundEvent hurtSound;
-  public static SoundEvent departureSound;
+  public static SoundEvent ambientSound = new SoundEvent(new ResourceLocation(Const.MODID, "bossambient"));
+  public static SoundEvent hurtSound = new SoundEvent(new ResourceLocation(Const.MODID, "bosshurt"));
+  public static SoundEvent departureSound = new SoundEvent(new ResourceLocation(Const.MODID, "bossdeath"));
   private final BossInfoServer bossInfo = (BossInfoServer) (new BossInfoServer(this.getDisplayName(), BossInfo.Color.GREEN, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
-
   public EntitySpriteGuardianBoss(World worldIn) {
     super(worldIn);
     setSize(2.0f, 2.0f);
@@ -78,12 +70,14 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     }
     this.rotationYaw = rand.nextInt(240) + 60;
   }
-
+  //  @Override
+  //  public ITextComponent getDisplayName() {
+  //    return new TextComponentString("Guardian of Sprites:LANG FILE");
+  //  }
   @Override
   public boolean isNonBoss() {
     return false;
   }
-
   @Override
   protected void entityInit() {
     super.entityInit();
@@ -96,37 +90,25 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     this.getDataManager().register(fadeTimer, Integer.valueOf(0));
     this.getDataManager().register(projectiles, Integer.valueOf(0));
   }
-
   @Override
   public void collideWithEntity(Entity entity) {
     if (this.getAttackTarget() != null && this.getHealth() > 0 && !getDataManager().get(pacified).booleanValue()) {
-      if (entity.getUniqueID().compareTo(this.getAttackTarget().getUniqueID()) == 0 && entity instanceof EntityLivingBase) {
-        EntityLivingBase living = ((EntityLivingBase) entity);
-        if (EntityUtil.isCreativePlayer(living)) {
-          return;
-        }
-        //TODO: NO CONFIG? HUH HMM WAT
-        living.attackEntityFrom(DamageSource.GENERIC, 4.0f);
+      if (entity.getUniqueID().compareTo(this.getAttackTarget().getUniqueID()) == 0) {
+        ((EntityLivingBase) entity).attackEntityFrom(DamageSource.GENERIC, 4.0f);
         float magnitude = (float) Math.sqrt(motionX * motionX + motionZ * motionZ);
-        living.knockBack(this, 3.0f * magnitude + 0.1f, -motionX / magnitude + 0.1, -motionZ / magnitude + 0.1);
-        living.attackEntityAsMob(this);
-        living.setRevengeTarget(this);
+        ((EntityLivingBase) entity).knockBack(this, 3.0f * magnitude + 0.1f, -motionX / magnitude + 0.1, -motionZ / magnitude + 0.1);
+        ((EntityLivingBase) entity).attackEntityAsMob(this);
+        ((EntityLivingBase) entity).setRevengeTarget(this);
       }
     }
   }
-
   @Override
   public void updateAITasks() {
     super.updateAITasks();
   }
-
   @Override
   public void onUpdate() {
     super.onUpdate();
-    if (this.world.getDifficulty() == EnumDifficulty.PEACEFUL) {
-      this.setDead();
-      return;
-    }
     float velocityScale = 1.0f;
     float addedMotionY = 0.0f;
     if (getDataManager().get(pacified) && getDataManager().get(fadeTimer) > 0) {
@@ -143,7 +125,7 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
       for (int i = 0; i < 20; i++) {
         for (int j = 0; j < 5; j++) {
           Vec3d location = pastPositions.get(i).add((new Vec3d(rand.nextFloat() - 0.5, rand.nextFloat() - 0.5, rand.nextFloat() - 0.5)).scale(3.0f));
-          EmberRootZoo.proxy.spawnParticleMagicSmallSparkleFX(getEntityWorld(), location.x, location.y + 1.35f, location.z, 0, 0, 0, 107, 255, 28);//RGB last 3
+          EmberRootZoo.proxy.spawnParticleMagicSmallSparkleFX(getEntityWorld(), location.x, location.y + 1.35f, location.z, 0, 0, 0, 107, 255, 28);
         }
         for (int j = 0; j < 2; j++) {
           Vec3d location = pastPositions.get(i).add((new Vec3d(rand.nextFloat() - 0.5, rand.nextFloat() - 0.5, rand.nextFloat() - 0.5)).scale(1.5f));
@@ -151,20 +133,55 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
         }
       }
       getEntityWorld().playSound(posX, posY, posZ, departureSound, SoundCategory.NEUTRAL, random.nextFloat() * 0.1f + 0.95f, random.nextFloat() * 0.1f + 0.95f, false);
+      if (!getEntityWorld().isRemote) {
+        //        getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.otherworldLeaf, 1)));
+        //        for (int i = 0; i < 24; i++) {
+        //          if (rand.nextInt(2) == 0) {
+        //            getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.otherworldLeaf, 1)));
+        //          }
+        //        }
+        //        for (int i = 0; i < 5; i++) {
+        //          getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.otherworldSubstance, 1)));
+        //        }
+        //        for (int i = 0; i < 8; i++) {
+        //          if (rand.nextInt(2) == 0) {
+        //            getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.otherworldSubstance, 1)));
+        //          }
+        //        }
+        //        getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.runeStone, 1)));
+        //        for (int i = 0; i < 5; i++) {
+        //          if (rand.nextInt(2) == 0) {
+        //            getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.runeStone, 1)));
+        //          }
+        //        }
+        //        int chance = rand.nextInt(4);
+        //        if (chance == 0) {
+        //          getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.itemCharmConjuration, 1)));
+        //        }
+        //        if (chance == 1) {
+        //          getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.itemCharmEvocation, 1)));
+        //        }
+        //        if (chance == 2) {
+        //          getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.itemCharmIllusion, 1)));
+        //        }
+        //        if (chance == 3) {
+        //          getEntityWorld().spawnEntity(new EntityItem(getEntityWorld(), posX, posY + 0.5, posZ, new ItemStack(RegistryManager.itemCharmRestoration, 1)));
+        //        }
+      }
       setDead();
     }
     if (this.ticksExisted % 20 == 0) {
-      List<EntityPlayer> playersValid = EntityUtil.getNonCreativePlayers(world, new AxisAlignedBB(posX - RANGE_ATTACK, posY - RANGE_ATTACK, posZ - RANGE_ATTACK, posX + RANGE_ATTACK, posY + RANGE_ATTACK, posZ + RANGE_ATTACK));
+      List<EntityPlayer> players = getEntityWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(posX - 72, posY - 72, posZ - 72, posX + 72, posY + 72, posZ + 72));
       boolean foundPrevious = false;
       if (this.getAttackTarget() != null) {
-        for (int i = 0; i < playersValid.size(); i++) {
-          if (playersValid.get(i).getUniqueID().compareTo(getAttackTarget().getUniqueID()) == 0) {
+        for (int i = 0; i < players.size(); i++) {
+          if (players.get(i).getUniqueID().compareTo(getAttackTarget().getUniqueID()) == 0) {
             foundPrevious = true;
           }
         }
       }
-      if (!foundPrevious && playersValid.size() > 0) {
-        this.setAttackTarget(playersValid.get(rand.nextInt(playersValid.size())));
+      if (!foundPrevious && players.size() > 0) {
+        this.setAttackTarget(players.get(rand.nextInt(players.size())));
       }
       else if (!foundPrevious && this.ticksExisted > 100) {
         for (int i = 0; i < 20; i++) {
@@ -283,15 +300,11 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
       pastPositions.set(0, new Vec3d(posX, posY, posZ));
     }
   }
-
   @Override
   public boolean isEntityInvulnerable(DamageSource source) {
-    if (getDataManager().get(pacified)) {
-      return true;
-    }
+    if (getDataManager().get(pacified)) { return true; }
     return false;
   }
-
   @Override
   public int getBrightnessForRender() {
     float f = 0.5F;
@@ -305,7 +318,6 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     }
     return j | k << 16;
   }
-
   @Override
   public boolean attackEntityFrom(DamageSource source, float amount) {
     getEntityWorld().playSound(posX, posY, posZ, hurtSound, SoundCategory.NEUTRAL, random.nextFloat() * 0.1f + 0.95f, random.nextFloat() * 0.1f + 0.95f, false);
@@ -316,7 +328,6 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     }
     return super.attackEntityFrom(source, amount);
   }
-
   @Override
   public void damageEntity(DamageSource source, float amount) {
     if (this.getHealth() - amount <= 0 && !getDataManager().get(pacified).booleanValue()) {
@@ -339,7 +350,6 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
       }
     }
   }
-
   @Override
   public boolean attackEntityAsMob(Entity entity) {
     if (entity instanceof EntityLivingBase) {
@@ -347,26 +357,19 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     }
     return super.attackEntityAsMob(entity);
   }
-
   @Override
   public boolean isAIDisabled() {
     return false;
   }
-
   @Override
   public void setDead() {
-    if (this.isDead == false && this.world.isRemote == false) {
-      this.entityDropItem(new ItemStack(Items.TOTEM_OF_UNDYING), 4.0F);
-    }
     super.setDead();
-    world.playSound(posX, posY, posZ, hurtSound, SoundCategory.NEUTRAL, random.nextFloat() * 0.1f + 0.95f, (random.nextFloat() * 0.1f + 0.7f) / 2.0f, false);
+    getEntityWorld().playSound(posX, posY, posZ, hurtSound, SoundCategory.NEUTRAL, random.nextFloat() * 0.1f + 0.95f, (random.nextFloat() * 0.1f + 0.7f) / 2.0f, false);
   }
-
   @Override
   protected boolean canDespawn() {
-    return true;
+    return false;
   }
-
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
@@ -375,12 +378,10 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
     this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
   }
-
   @Override
   public void onLivingUpdate() {
     super.onLivingUpdate();
   }
-
   @Override
   public void readEntityFromNBT(NBTTagCompound compound) {
     super.readEntityFromNBT(compound);
@@ -402,7 +403,6 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     getDataManager().setDirty(fadeTimer);
     this.bossInfo.setPercent(getHealth() / getMaxHealth());
   }
-
   @Override
   public void writeEntityToNBT(NBTTagCompound compound) {
     super.writeEntityToNBT(compound);
@@ -415,7 +415,6 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     compound.setInteger("projectiles", getDataManager().get(projectiles));
     compound.setInteger("fadeTimer", getDataManager().get(fadeTimer));
   }
-
   public float getFade(float partialTicks) {
     if (getDataManager().get(fadeTimer) == 0) {
       return 1.0f;
@@ -424,21 +423,17 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
       return Math.max(0, (((float) getDataManager().get(fadeTimer) - partialTicks)) / 200.0f);
     }
   }
-
   @Override
   public void addTrackingPlayer(EntityPlayerMP player) {
     super.addTrackingPlayer(player);
     bossInfo.addPlayer(player);
   }
-
   @Override
   public void removeTrackingPlayer(EntityPlayerMP player) {
     super.removeTrackingPlayer(player);
     bossInfo.removePlayer(player);
   }
-
   public static BlockPattern golemPattern;
-
   public static BlockPattern getGolemPattern() {
     // if (golemPattern == null) {
     golemPattern = FactoryBlockPattern.start().aisle("$^$", "~#~", "###", "#~#").where(
@@ -453,7 +448,6 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
     //   }
     return golemPattern;
   }
-
   @Nullable
   protected ResourceLocation getLootTable() {
     return new ResourceLocation(Const.MODID, "entity/sprite_boss");

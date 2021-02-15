@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.sprite.particle;
-
 import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
@@ -9,14 +8,12 @@ import net.minecraft.world.World;
 import teamroots.emberroot.Const;
 
 public class ParticleMagicSparkle extends Particle {
-
   Random random = new Random();
   public double colorR = 0;
   public double colorG = 0;
   public double colorB = 0;
   public int lifetime = 80;
   public static final ResourceLocation texture = new ResourceLocation(Const.MODID, "entity/particle_star");
-
   public ParticleMagicSparkle(World worldIn, double x, double y, double z, double vx, double vy, double vz, double r, double g, double b) {
     super(worldIn, x, y, z, 0, 0, 0);
     this.colorR = r;
@@ -41,12 +38,10 @@ public class ParticleMagicSparkle extends Particle {
     TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString());
     this.setParticleTexture(sprite);
   }
-
   @Override
   public int getBrightnessForRender(float pTicks) {
     return 255;
   }
-
   //	
   //	@Override
   //	public boolean isTransparent(){
@@ -57,7 +52,6 @@ public class ParticleMagicSparkle extends Particle {
   public int getFXLayer() {
     return 1;
   }
-
   @Override
   public void onUpdate() {
     super.onUpdate();

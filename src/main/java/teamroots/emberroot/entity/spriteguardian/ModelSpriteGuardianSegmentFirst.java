@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.spriteguardian;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -8,7 +7,6 @@ import net.minecraft.util.math.Vec3d;
 import teamroots.emberroot.util.Util;
 
 public class ModelSpriteGuardianSegmentFirst extends ModelBase {
-
   public static ModelSpriteGuardianSegmentFirst instance;
   //fields
   ModelRenderer head1;
@@ -77,7 +75,6 @@ public class ModelSpriteGuardianSegmentFirst extends ModelBase {
   ModelRenderer ring40;
   ModelRenderer ring41;
   ModelRenderer ring42;
-
   public ModelSpriteGuardianSegmentFirst() {
     textureWidth = 128;
     textureHeight = 128;
@@ -478,11 +475,9 @@ public class ModelSpriteGuardianSegmentFirst extends ModelBase {
     ring42.mirror = true;
     setRotation(ring42, 0F, 0F, 5.759586F);
   }
-
   public Vec3d getPosFromIndex(EntitySpriteGuardianBoss guardian, int index, float partialTicks) {
     return guardian.pastPositions.get(index);
   }
-
   public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, int index) {
     GlStateManager.pushAttrib();
     float scale = scaleFactor;
@@ -568,7 +563,6 @@ public class ModelSpriteGuardianSegmentFirst extends ModelBase {
     GlStateManager.popMatrix();
     GlStateManager.popAttrib();
   }
-
   private void setRotation(ModelRenderer model, float x, float y, float z) {
     model.rotateAngleX = x;
     model.rotateAngleY = y;

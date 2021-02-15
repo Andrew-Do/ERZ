@@ -5,15 +5,14 @@
 // Keep in mind that you still need to fill in some blanks
 // - ZeuX
 package teamroots.emberroot.entity.wolftimber;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.util.math.Vec3d;
 
 public class ModelTimberWolf extends ModelBase {
-
   public static ModelTimberWolf instance;
   //fields
   ModelRenderer legLB2;
@@ -34,7 +33,6 @@ public class ModelTimberWolf extends ModelBase {
   ModelRenderer tail4;
   ModelRenderer ear1;
   ModelRenderer ear2;
-
   public ModelTimberWolf() {
     textureWidth = 128;
     textureHeight = 128;
@@ -147,16 +145,15 @@ public class ModelTimberWolf extends ModelBase {
     ear2.mirror = true;
     setRotation(ear2, 0F, 0F, -0.3926991F);
   }
-
   public void render(Entity entity, float f, float f1, float age, float f3, float f4, float f5) {
     GlStateManager.pushMatrix();
     float speed = (float) ((new Vec3d(entity.motionX, 0, entity.motionZ)).lengthVector() * 2.0f);
     super.render(entity, f, f1, age, f3, f4, f5);
     setRotationAngles(f, f1, age, f3, f4, f5);
-    //    if (((EntityAnimal) entity).getGrowingAge() < 0) {
-    //      GlStateManager.scale(0.5, 0.5, 0.5);
-    //      GlStateManager.translate(0, 1.5, 0);
-    //    }
+    if (((EntityAnimal) entity).getGrowingAge() < 0) {
+      GlStateManager.scale(0.5, 0.5, 0.5);
+      GlStateManager.translate(0, 1.5, 0);
+    }
     legRF1.rotateAngleX = (float) Math.toRadians(speed * 240f * (float) Math.sin(Math.toRadians(age % 360) * 24F));
     legLF1.rotateAngleX = -(float) Math.toRadians(speed * 240f * (float) Math.sin(Math.toRadians(age % 360) * 24F));
     legLB1.rotateAngleX = (float) Math.toRadians(speed * 240f * (float) Math.sin(Math.toRadians(age % 360) * 24F));
@@ -193,13 +190,11 @@ public class ModelTimberWolf extends ModelBase {
     ear2.render(f5);
     GlStateManager.popMatrix();
   }
-
   private void setRotation(ModelRenderer model, float x, float y, float z) {
     model.rotateAngleX = x;
     model.rotateAngleY = y;
     model.rotateAngleZ = z;
   }
-
   public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5) {
     super.setRotationAngles(f, f1, f2, f3, f4, f5, null);
   }

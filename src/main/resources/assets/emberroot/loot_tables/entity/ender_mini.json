@@ -2,19 +2,15 @@
     "pools": [
         {
 			"name": "main",
-            "rolls": 1,
+            "rolls": 2,
             "entries": [
                 {
                     "type": "item",
-                    "name": "minecraft:ender_pearl"
-                },
-                {
-                    "type": "item",
-                    "name": "minecraft:ender_eye"
+                    "name": "minecraft:ender_pearl",
                 },
                 {
                     "type": "empty",
-                    "weight": 3
+                    "weight": 5
                 }
             ]
         }

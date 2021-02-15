@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.owl;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,33 +17,26 @@ import teamroots.emberroot.util.PPUtil;
 import teamroots.emberroot.util.SpawnUtil;
 
 public class FlyingPathFinder extends PathFinder {
-
   private PathHeap path = new PathHeap();
   private PathPoint[] pathOptions = new PathPoint[32];
   private NodeProcessor nodeProcessor;
-
   public FlyingPathFinder(NodeProcessor nodeProcessorIn) {
     super(nodeProcessorIn);
     this.nodeProcessor = nodeProcessorIn;
   }
-
   //createEntityPathTo
   @Override
   public Path findPath(IBlockAccess blockaccess, EntityLiving entityFrom, Entity entityTo, float dist) {
     return createEntityPathTo(blockaccess, entityFrom, entityTo.posX, entityTo.getEntityBoundingBox().minY, entityTo.posZ, dist);
   }
-
   //createEntityPathTo
   @Override
   public Path findPath(IBlockAccess blockaccess, EntityLiving entityIn, BlockPos targetPos, float dist) {
     return createEntityPathTo(blockaccess, entityIn, targetPos.getX() + 0.5F, targetPos.getY() + 0.5F, targetPos.getZ() + 0.5F, dist);
   }
-
   private Path createEntityPathTo(IBlockAccess blockaccess, Entity ent, double x, double y, double z, float distance) {
     path.clearPath();
-    if (!(ent instanceof EntityLiving)) {
-      return null;
-    }
+    if (!(ent instanceof EntityLiving)) { return null; }
     EntityLiving entityIn = (EntityLiving) ent;
     nodeProcessor.initProcessor(blockaccess, (EntityLiving) entityIn);
     PathPoint startPoint = nodeProcessor.getStart();
@@ -63,9 +55,7 @@ public class FlyingPathFinder extends PathFinder {
         climbY++;
       }
     }
-    if (climbY == 0) {
-      return createDefault(blockaccess, entityIn, distance, x, y, z);
-    }
+    if (climbY == 0) { return createDefault(blockaccess, entityIn, distance, x, y, z); }
     List<PathPoint> resPoints = new ArrayList<PathPoint>();
     // climb, then descend
     double climbDistance = Math.min(horizDist / 2.0, climbY);
@@ -74,9 +64,7 @@ public class FlyingPathFinder extends PathFinder {
     horizDirVec = horizDirVec.normalize();
     Vec3d offset = new Vec3d(horizDirVec.x * climbDistance, climbY, horizDirVec.z * climbDistance);
     PathPoint climbPoint = new PathPoint(rnd(startPoint.x + offset.x), rnd(startPoint.y + offset.y), rnd(startPoint.z + offset.z));
-    if (!SpawnUtil.isSpaceAvailableForSpawn(entityIn.world, (EntityLiving) entityIn, false)) {
-      return createDefault(blockaccess, entityIn, distance, x, y, z);
-    }
+    if (!SpawnUtil.isSpaceAvailableForSpawn(entityIn.world, (EntityLiving) entityIn, false)) { return createDefault(blockaccess, entityIn, distance, x, y, z); }
     PathPoint[] points = addToPath(entityIn, startPoint, climbPoint, distance);
     nodeProcessor.postProcess();
     if (points == null) { //failed to climb so go default      
@@ -90,16 +78,11 @@ public class FlyingPathFinder extends PathFinder {
     climbPoint = new PathPoint(climbPoint.x, climbPoint.y, climbPoint.z);
     points = addToPath(entityIn, climbPoint, endPoint, distance);
     nodeProcessor.postProcess();
-    if (points == null) {
-      return createDefault(blockaccess, entityIn, distance, x, y, z);
-    }
+    if (points == null) { return createDefault(blockaccess, entityIn, distance, x, y, z); }
     resPoints.addAll(Arrays.asList(points));
-    if (resPoints.isEmpty()) {
-      return null;
-    }
+    if (resPoints.isEmpty()) { return null; }
     return new Path(resPoints.toArray(new PathPoint[resPoints.size()]));
   }
-
   private PathPoint[] addToPath(Entity entityIn, PathPoint pathpointStart, PathPoint pathpointEnd, float maxDistance) {
     // set start point values
     //    pathpointStart.totalPathDistance = 0.0F;
@@ -119,9 +102,7 @@ public class FlyingPathFinder extends PathFinder {
     while (!path.isPathEmpty()) {
       PathPoint dequeued = path.dequeue();
       // we are at the end
-      if (dequeued.equals(pathpointEnd)) {
-        return createEntityPath(pathpointStart, pathpointEnd);
-      }
+      if (dequeued.equals(pathpointEnd)) { return createEntityPath(pathpointStart, pathpointEnd); }
       // if the dequed point is closer to the ned that our current one, make it
       // the current point
       if (dequeued.distanceToSquared(pathpointEnd) < curPoint.distanceToSquared(pathpointEnd)) {
@@ -170,11 +151,9 @@ public class FlyingPathFinder extends PathFinder {
       return createEntityPath(pathpointStart, curPoint);
     }
   }
-
   private int rnd(double d) {
     return (int) Math.round(d);
   }
-
   private Path createDefault(IBlockAccess blockaccess, EntityLiving entityIn, float distance, double x, double y, double z) {
     this.path.clearPath();
     this.nodeProcessor.initProcessor(blockaccess, entityIn);
@@ -192,7 +171,6 @@ public class FlyingPathFinder extends PathFinder {
     this.nodeProcessor.postProcess();
     return res;
   }
-
   private static PathPoint[] createEntityPath(PathPoint start, PathPoint end) {
     int i = 1;
     for (PathPoint pathpoint = end; PPUtil.getPrevious(pathpoint) != null; pathpoint = PPUtil.getPrevious(pathpoint)) {

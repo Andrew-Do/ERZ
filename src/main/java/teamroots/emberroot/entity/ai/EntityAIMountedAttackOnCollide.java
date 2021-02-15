@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.ai;
-
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -10,14 +9,14 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 public class EntityAIMountedAttackOnCollide extends EntityAIBase {
-
   World worldObj;
   EntityCreature attacker;
   int attackPause;
   double speedTowardsTarget;
   double speedTowardsTargetMounted;
   /**
-   * When true, the mob will continue chasing its target, even if it can't find a path to them right now.
+   * When true, the mob will continue chasing its target, even if it can't find
+   * a path to them right now.
    */
   boolean longMemory;
   Path entityPathEntity;
@@ -27,12 +26,10 @@ public class EntityAIMountedAttackOnCollide extends EntityAIBase {
   private double targetPosY;
   private double targetPosZ;
   private int failedPathFindingPenalty;
-
   public EntityAIMountedAttackOnCollide(EntityCreature attacker, Class<?> targetClass, double speedTowardsTarget, double speedTowardsTargetMounted, boolean longMemory) {
     this(attacker, speedTowardsTarget, speedTowardsTargetMounted, longMemory);
     this.classTarget = targetClass;
   }
-
   public EntityAIMountedAttackOnCollide(EntityCreature attacker, double speedTowardsTarget, double speedTowardsTargetMounted, boolean longMemory) {
     this.attacker = attacker;
     this.worldObj = attacker.world;
@@ -41,7 +38,6 @@ public class EntityAIMountedAttackOnCollide extends EntityAIBase {
     this.longMemory = longMemory;
     this.setMutexBits(3);
   }
-
   /**
    * Returns whether the EntityAIBase should begin execution.
    */
@@ -67,7 +63,6 @@ public class EntityAIMountedAttackOnCollide extends EntityAIBase {
       }
     }
   }
-
   /**
    * Returns whether an in-progress EntityAIBase should continue executing
    */
@@ -76,7 +71,6 @@ public class EntityAIMountedAttackOnCollide extends EntityAIBase {
     return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : (!longMemory ? !getNavigator().noPath()
         : attacker.isWithinHomeDistanceCurrentPosition()));
   }
-
   /**
    * Execute a one shot task or start executing a continuous task
    */
@@ -85,14 +79,12 @@ public class EntityAIMountedAttackOnCollide extends EntityAIBase {
     nav.setPath(entityPathEntity, speedTowardsTarget);
     pathUpdateTimer = 0;
   }
-
   /**
    * Resets the task
    */
   public void resetTask() {
     getNavigator().clearPathEntity();
   }
-
   /**
    * Updates the task
    */
@@ -141,18 +133,13 @@ public class EntityAIMountedAttackOnCollide extends EntityAIBase {
       attacker.attackEntityAsMob(target);
     }
   }
-
   private double getAttackSpeed() {
-    if (attacker.isRiding()) {
-      return speedTowardsTargetMounted;
-    }
+    if (attacker.isRiding()) { return speedTowardsTargetMounted; }
     return speedTowardsTarget;
   }
-
   protected PathNavigate getNavigator() {
     return attacker.getNavigator();
   }
-
   protected double getAttackReach(EntityLivingBase target) {
     double res = attacker.width * 2.0 * attacker.width * 2.0 + target.width;
     if (attacker.isRiding()) {

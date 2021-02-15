@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.owl;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityLookHelper;
@@ -7,17 +6,14 @@ import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class FlyingMoveHelper extends EntityMoveHelper {
-
   private EntityLiving entity;
   private IFlyingMob mob;
   private double maxDescentSpeed = 0.1;
-
   public FlyingMoveHelper(IFlyingMob owl) {
     super(owl.asEntityCreature());
     this.mob = owl;
     this.entity = owl.asEntityCreature();
   }
-
   @Override
   public void onUpdateMoveHelper() {
     if (!entity.getNavigator().noPath()) {

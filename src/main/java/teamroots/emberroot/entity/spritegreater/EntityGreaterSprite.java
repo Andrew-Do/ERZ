@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.spritegreater;
-
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -9,7 +8,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -21,19 +19,15 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import teamroots.emberroot.Const;
 import teamroots.emberroot.EmberRootZoo;
-import teamroots.emberroot.config.ConfigManager;
 import teamroots.emberroot.config.ConfigSpawnEntity;
 import teamroots.emberroot.entity.sprite.EntitySprite;
 import teamroots.emberroot.entity.sprite.ISprite;
-import teamroots.emberroot.util.EntityUtil;
 import teamroots.emberroot.util.Util;
 
 public class EntityGreaterSprite extends EntityFlying implements ISprite {// implements IRangedAttackMob {
-
   public float range = 64;
   public static final DataParameter<Float> targetDirectionX = EntityDataManager.<Float> createKey(EntityGreaterSprite.class, DataSerializers.FLOAT);
   public static final DataParameter<Float> targetDirectionY = EntityDataManager.<Float> createKey(EntityGreaterSprite.class, DataSerializers.FLOAT);
@@ -46,7 +40,6 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
   public static final DataParameter<BlockPos> lastLastTargetBlock = EntityDataManager.<BlockPos> createKey(EntityGreaterSprite.class, DataSerializers.BLOCK_POS);
   public static final DataParameter<Boolean> hostile = EntityDataManager.<Boolean> createKey(EntityGreaterSprite.class, DataSerializers.BOOLEAN);
   public static final String NAME = "rootsonespritegreater";
-  private static final double RANGE_ATTACK = 16;
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityGreaterSprite.class, EnumCreatureType.MONSTER);
   public float addDirectionX = 0;
   public float addDirectionY = 0;
@@ -65,7 +58,6 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
   public Vec3d prevMoveVec = new Vec3d(0, 0, 0);
   Random random = new Random();
   public int offset = random.nextInt(25);
-
   public EntityGreaterSprite(World worldIn) {
     super(worldIn);
     setSize(1.0f, 1.0f);
@@ -74,25 +66,6 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
     this.experienceValue = 20;
     this.rotationYaw = rand.nextInt(240) + 60;
   }
-
-  @Override
-  public int getMaxSpawnedInChunk() {
-    return config.settings.max;
-  }
-
-  @Override
-  public boolean getCanSpawnHere() {
-    int i = MathHelper.floor(this.posX);
-    int j = MathHelper.floor(this.getEntityBoundingBox().minY);
-    int k = MathHelper.floor(this.posZ);
-    BlockPos blockpos = new BlockPos(i, j, k);
-    boolean canSpawn = this.world.getBlockState(blockpos.down()).getBlock() != Blocks.AIR
-        && this.world.getLight(blockpos) < ConfigManager.LIGHT_LEVEL
-        && super.getCanSpawnHere()
-        && this.rand.nextInt(config.settings.weightedProb) == 0;
-    return canSpawn;
-  }
-
   @Override
   protected void entityInit() {
     super.entityInit();
@@ -107,34 +80,26 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
     this.getDataManager().register(lastTargetBlock, new BlockPos(0, -1, 0));
     this.getDataManager().register(lastLastTargetBlock, new BlockPos(0, -1, 0));
   }
-
   public void setHostile() {
     this.getDataManager().set(hostile, true);
     this.getDataManager().setDirty(hostile);
   }
-
   @Override
   public void collideWithEntity(Entity entity) {
     if (this.getAttackTarget() != null && this.getHealth() > 0 && !getDataManager().get(stunned).booleanValue()) {
-      if (entity instanceof EntityLivingBase && entity.getUniqueID().compareTo(this.getAttackTarget().getUniqueID()) == 0) {
-        EntityLivingBase living = ((EntityLivingBase) entity);
-        if (EntityUtil.isCreativePlayer(living)) {
-          return;
-        }
-        living.attackEntityFrom(DamageSource.GENERIC, config.settings.attack);
+      if (entity.getUniqueID().compareTo(this.getAttackTarget().getUniqueID()) == 0) {
+        ((EntityLivingBase) entity).attackEntityFrom(DamageSource.GENERIC, 4.0f);
         float magnitude = (float) Math.sqrt(motionX * motionX + motionZ * motionZ);
-        living.knockBack(this, 4.0f * magnitude + 0.1f, -motionX / magnitude + 0.1, -motionZ / magnitude + 0.1);
-        living.attackEntityAsMob(this);
-        living.setRevengeTarget(this);
+        ((EntityLivingBase) entity).knockBack(this, 4.0f * magnitude + 0.1f, -motionX / magnitude + 0.1, -motionZ / magnitude + 0.1);
+        ((EntityLivingBase) entity).attackEntityAsMob(this);
+        ((EntityLivingBase) entity).setRevengeTarget(this);
       }
     }
   }
-
   @Override
   public void updateAITasks() {
     super.updateAITasks();
   }
-
   //    @Override
   //    public void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source){
   //    	super.dropLoot(wasRecentlyHit,lootingModifier,source);
@@ -170,9 +135,6 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
   @Override
   public void onUpdate() {
     super.onUpdate();
-    if (this.world.getDifficulty() == EnumDifficulty.PEACEFUL) {
-      this.setDead();
-    }
     prevYaw5 = prevYaw4;
     prevYaw4 = prevYaw3;
     prevYaw3 = prevYaw2;
@@ -280,9 +242,9 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
         EmberRootZoo.proxy.spawnParticleMagicSparkleFX(getEntityWorld(), posX + ((random.nextDouble()) - 0.5), posY + 0.25 + ((random.nextDouble()) - 0.5), posZ + ((random.nextDouble()) - 0.5), -0.25 * moveVec.x, -0.25 * moveVec.y, -0.25 * moveVec.z, 76, 230, 0);
       }
       if (getDataManager().get(happiness) < -25 && this.ticksExisted % 20 == 0 && this.getAttackTarget() == null) {
-        List<EntityPlayer> playersValid = EntityUtil.getNonCreativePlayers(getEntityWorld(), new AxisAlignedBB(posX - RANGE_ATTACK, posY - RANGE_ATTACK, posZ - RANGE_ATTACK, posX + RANGE_ATTACK, posY + RANGE_ATTACK, posZ + RANGE_ATTACK));
-        if (playersValid.size() > 0) {
-          this.setAttackTarget(playersValid.get(rand.nextInt(playersValid.size())));
+        List<EntityPlayer> players = (List<EntityPlayer>) getEntityWorld().getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(posX - 16.0, posY - 16.0, posZ - 16.0, posX + 16.0, posY + 16.0, posZ + 16.0));
+        if (players.size() > 0) {
+          this.setAttackTarget(players.get(0));
         }
       }
     }
@@ -304,12 +266,9 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
       this.setHappiness(getHappiness() - 0.001f);
     }
   }
-
   @Override
   public int getBrightnessForRender() {
-    if (getDataManager().get(stunned).booleanValue()) {
-      return 128;
-    }
+    if (getDataManager().get(stunned).booleanValue()) { return 128; }
     float f = 0.5F;
     f = MathHelper.clamp(f, 0.0F, 1.0F);
     int i = super.getBrightnessForRender();
@@ -321,7 +280,6 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
     }
     return j | k << 16;
   }
-
   @Override
   public boolean attackEntityFrom(DamageSource source, float amount) {
     getEntityWorld().playSound(posX, posY, posZ, EntitySprite.hurtSound, SoundCategory.NEUTRAL, random.nextFloat() * 0.1f + 0.95f, random.nextFloat() * 0.1f + 0.7f, false);
@@ -332,7 +290,6 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
     }
     return super.attackEntityFrom(source, amount);
   }
-
   @Override
   public boolean attackEntityAsMob(Entity entity) {
     if (entity instanceof EntityLivingBase) {
@@ -340,37 +297,32 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
     }
     return super.attackEntityAsMob(entity);
   }
-
   @Override
   public boolean isAIDisabled() {
     return false;
   }
-
   @Override
   public void setDead() {
     super.setDead();
     getEntityWorld().playSound(posX, posY, posZ, EntitySprite.hurtSound, SoundCategory.NEUTRAL, random.nextFloat() * 0.1f + 0.95f, (random.nextFloat() * 0.1f + 0.7f) / 2.0f, false);
   }
-
   @Override
   protected boolean canDespawn() {
-    return true;
+    return false;
   }
-
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
+    //    this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(80.0);
     this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.25D);
     this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(2);
     //SPEED 2
     ConfigSpawnEntity.syncInstance(this, config.settings);
   }
-
   @Override
   public void onLivingUpdate() {
     super.onLivingUpdate();
   }
-
   @Override
   public void readEntityFromNBT(NBTTagCompound compound) {
     super.readEntityFromNBT(compound);
@@ -395,7 +347,6 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
     getDataManager().setDirty(lastTargetBlock);
     getDataManager().setDirty(lastLastTargetBlock);
   }
-
   @Override
   public void writeEntityToNBT(NBTTagCompound compound) {
     super.writeEntityToNBT(compound);
@@ -416,18 +367,15 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
     compound.setInteger("lastLastTargetBlockY", getDataManager().get(lastLastTargetBlock).getY());
     compound.setInteger("lastLastTargetBlockZ", getDataManager().get(lastLastTargetBlock).getZ());
   }
-
   @Override
   public float getHappiness() {
     return getDataManager().get(happiness).floatValue();
   }
-
   @Override
   public void setHappiness(float value) {
     getDataManager().set(happiness, value);
     getDataManager().setDirty(happiness);
   }
-
   @Override
   public void setTargetPosition(BlockPos pos) {
     if (!pos.equals(getDataManager().get(lastTargetBlock)) && !pos.equals(getDataManager().get(targetBlock))) {
@@ -439,12 +387,10 @@ public class EntityGreaterSprite extends EntityFlying implements ISprite {// imp
       getDataManager().setDirty(targetBlock);
     }
   }
-
   @Override
   public BlockPos getTargetPosition() {
     return getDataManager().get(targetBlock);
   }
-
   @Nullable
   protected ResourceLocation getLootTable() {
     return new ResourceLocation(Const.MODID, "entity/sprite_greater");

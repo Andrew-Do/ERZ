@@ -1,19 +1,16 @@
 package teamroots.emberroot.entity.slime;
-
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -23,55 +20,42 @@ import teamroots.emberroot.Const;
 import teamroots.emberroot.config.ConfigSpawnEntity;
 
 public class EntityRainbowSlime extends EntitySlime {
-
   public static final DataParameter<Integer> variant = EntityDataManager.<Integer> createKey(EntitySlime.class, DataSerializers.VARINT);
   public static final String NAME = "rainbowslime";
-
   public static enum VariantColors {
     BLUE, GREY, WHITE, PURPLE, RED;//water, snow, clay
-
     public String nameLower() {
       return this.name().toLowerCase();
     }
   }
-
   public static boolean canPlaceBlocks;
-  public static boolean canPotionsDeath;
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityRainbowSlime.class, EnumCreatureType.MONSTER);
-
   public EntityRainbowSlime(World worldIn) {
     super(worldIn);
   }
-
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
     ConfigSpawnEntity.syncInstance(this, config.settings);
   }
-
   @Override
   protected void entityInit() {
     super.entityInit();
     this.getDataManager().register(variant, rand.nextInt(VariantColors.values().length));
   }
-
   public Integer getVariant() {
     return getDataManager().get(variant);
   }
-
   public VariantColors getVariantEnum() {
     return VariantColors.values()[getVariant()];
   }
-
   @Override
   protected void initEntityAI() {
     super.initEntityAI();
   }
-
   private boolean isBaby() {
     return this.getSlimeSize() == 1;
   }
-
   @Override
   public void setDead() {
     if (this.world.isRemote == false
@@ -82,13 +66,10 @@ public class EntityRainbowSlime extends EntitySlime {
       //skip setting block if mob griefing is false
       setBlockOnDeath();
     }
-    if (canPotionsDeath) {
-      setPotionsOnDeath();
-    }
+    setPotionsOnDeath();
     spawnChildSlimes();
     this.isDead = true;
   }
-
   private void setBlockOnDeath() {
     BlockPos pos = this.getPosition();
     IBlockState setBlock = null;
@@ -119,9 +100,10 @@ public class EntityRainbowSlime extends EntitySlime {
     }
     if (setBlock != null) {
       this.world.setBlockState(this.getPosition(), setBlock);
+      //doesnt make it flow. idk
+      // this.world.notifyBlockUpdate(this.getPosition(), setBlock, setBlock, 3);//make tha water flowwwwwww
     }
   }
-
   public void setPotionsOnDeath() {
     switch (this.getVariantEnum()) {
       case BLUE:
@@ -129,24 +111,27 @@ public class EntityRainbowSlime extends EntitySlime {
       case GREY:
       break;
       case PURPLE:
-        this.spawnLingeringPotion(PotionType.getPotionTypeForName("poison"));
+        this.makeAreaOfEffectCloud(PotionType.getPotionTypeForName("poison"));
       break;
       case WHITE:
       break;
       case RED:
-        this.spawnLingeringPotion(PotionType.getPotionTypeForName("regeneration"));
+        this.makeAreaOfEffectCloud(PotionType.getPotionTypeForName("regeneration"));
       break;
     }
   }
-
-  private void spawnLingeringPotion(PotionType type) {
-    EntityPotion entitypotion = new EntityPotion(world, this, PotionUtils.addPotionToItemStack(new ItemStack(Items.LINGERING_POTION), type));
-    entitypotion.setThrowableHeading(0, 1, 0, 0.05F, 1.0F);
-    if (world.isRemote == false) {
-      world.spawnEntity(entitypotion);
-    }
+  private void makeAreaOfEffectCloud(PotionType type) {
+    EntityAreaEffectCloud entityareaeffectcloud = new EntityAreaEffectCloud(this.world, this.posX, this.posY, this.posZ);
+    entityareaeffectcloud.setOwner(this);
+    entityareaeffectcloud.setRadius(3.0F);
+    entityareaeffectcloud.setRadiusOnUse(-0.5F);
+    entityareaeffectcloud.setWaitTime(10);
+    entityareaeffectcloud.setRadiusPerTick(-entityareaeffectcloud.getRadius() / (float) entityareaeffectcloud.getDuration());
+    entityareaeffectcloud.setPotion(type);
+    for (PotionEffect e : type.getEffects())
+      entityareaeffectcloud.addEffect(e);// new PotionEffect(MobEffects.POISON)
+    this.world.spawnEntity(entityareaeffectcloud);
   }
-
   @Override
   public String getName() {
     if (this.hasCustomName()) {
@@ -161,7 +146,6 @@ public class EntityRainbowSlime extends EntitySlime {
       return I18n.translateToLocal("entity." + s + "." + var + ".name");
     }
   }
-
   /**
    * Just like vanilla except we set the variant to match the parent
    */
@@ -186,7 +170,6 @@ public class EntityRainbowSlime extends EntitySlime {
       }
     }
   }
-
   /**
    * make sure that on death we get one of our own
    */
@@ -194,25 +177,21 @@ public class EntityRainbowSlime extends EntitySlime {
   protected EntityRainbowSlime createInstance() {
     return new EntityRainbowSlime(this.world);
   }
-
   @Override
   protected EnumParticleTypes getParticleType() {
     return EnumParticleTypes.WATER_SPLASH;
   }
-
   @Override
   public void readEntityFromNBT(NBTTagCompound compound) {
     super.readEntityFromNBT(compound);
     getDataManager().set(variant, compound.getInteger("variant"));
     getDataManager().setDirty(variant);
   }
-
   @Override
   public void writeEntityToNBT(NBTTagCompound compound) {
     super.writeEntityToNBT(compound);
     compound.setInteger("variant", getDataManager().get(variant));
   }
-
   @Override
   public ResourceLocation getLootTable() {
     String colour = getVariantEnum().nameLower();

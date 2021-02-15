@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.golem;
-
 import java.awt.Color;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
@@ -31,18 +30,14 @@ import teamroots.emberroot.config.ConfigSpawnEntity;
 import teamroots.emberroot.entity.deer.EntityDeer;
 
 public class EntityAncientGolem extends EntityMob {
-
   public static final DataParameter<Integer> variant = EntityDataManager.<Integer> createKey(EntityAncientGolem.class, DataSerializers.VARINT);
   public static final DataParameter<Integer> FIRESPEED = EntityDataManager.<Integer> createKey(EntityAncientGolem.class, DataSerializers.VARINT);
-  public static final String NAME = "rainbow_golem";
-
+  public static final String NAME = "ancient_golem";
   public static enum VariantColors {
     RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE;
-
     public String nameLower() {
       return this.name().toLowerCase();
     }
-
     /**
      * r,g,b passed into projectile shot
      * 
@@ -68,24 +63,18 @@ public class EntityAncientGolem extends EntityMob {
       return null;//new Color(0, 0, 0);
     }
   }
-
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityAncientGolem.class, EnumCreatureType.MONSTER);
-  public static boolean attacksSomeMobs;
-
   public EntityAncientGolem(World worldIn) {
     super(worldIn);
     setSize(0.6f, 1.8f);
     this.experienceValue = 10;
   }
-
   public Integer getVariant() {
     return getDataManager().get(variant);
   }
-
   public VariantColors getVariantEnum() {
     return VariantColors.values()[getVariant()];
   }
-
   @Override
   protected void entityInit() {
     super.entityInit();
@@ -104,7 +93,6 @@ public class EntityAncientGolem extends EntityMob {
       break;
     }
   }
-
   @Override
   public String getName() {
     if (this.hasCustomName()) {
@@ -119,7 +107,6 @@ public class EntityAncientGolem extends EntityMob {
       return I18n.translateToLocal("entity." + s + "." + var + ".name");
     }
   }
-
   @Override
   protected void initEntityAI() {
     this.tasks.addTask(0, new EntityAISwimming(this));
@@ -128,41 +115,41 @@ public class EntityAncientGolem extends EntityMob {
     this.tasks.addTask(7, new EntityAIWander(this, 0.46D));
     this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
     this.tasks.addTask(8, new EntityAILookIdle(this));
-    this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-    if (attacksSomeMobs) {
-      switch (this.getVariantEnum()) {
-        case BLUE:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySlime.class, true));
-        break;
-        case GREEN:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityZombie.class, true));
-        break;
-        case ORANGE:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, true));
-        break;
-        case PURPLE:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityEnderman.class, true));
-        break;
-        case RED:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPigZombie.class, true));
-        break;
-        case YELLOW://gold is the only one starting passive to the player
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityDeer.class, true));
-        break;
-        default:
-        break;
-      }
+    switch (this.getVariantEnum()) {
+      case BLUE:
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySlime.class, true));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+      break;
+      case GREEN:
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityZombie.class, true));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+      break;
+      case ORANGE:
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, true));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+      break;
+      case PURPLE:
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityEnderman.class, true));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+      break;
+      case RED:
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPigZombie.class, true));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+      break;
+      case YELLOW://gold is the only one starting passive to the player
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityDeer.class, true));
+      break;
+      default:
+      break;
     }
   }
-
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
     this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-    //    this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+    this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
     ConfigSpawnEntity.syncInstance(this, config.settings);
   }
-
   @Override
   public void onUpdate() {
     super.onUpdate();
@@ -176,19 +163,16 @@ public class EntityAncientGolem extends EntityMob {
       }
     }
   }
-
   @Override
   public void readEntityFromNBT(NBTTagCompound compound) {
     super.readEntityFromNBT(compound);
     getDataManager().set(variant, compound.getInteger("variant"));
   }
-
   @Override
   public void writeEntityToNBT(NBTTagCompound compound) {
     super.writeEntityToNBT(compound);
     compound.setInteger("variant", getDataManager().get(variant));
   }
-
   @Override
   public ResourceLocation getLootTable() {
     return new ResourceLocation(Const.MODID, "entity/golem_" + getVariantEnum().nameLower());

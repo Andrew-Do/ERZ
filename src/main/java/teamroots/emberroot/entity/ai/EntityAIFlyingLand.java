@@ -1,5 +1,4 @@
 package teamroots.emberroot.entity.ai;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -7,7 +6,6 @@ import net.minecraft.util.math.BlockPos;
 import teamroots.emberroot.util.EntityUtil;
 
 public class EntityAIFlyingLand extends EntityAIBase {
-
   private EntityCreature entity;
   protected double speed;
   private double targetX;
@@ -18,18 +16,14 @@ public class EntityAIFlyingLand extends EntityAIBase {
   private int maxSearchRange = 16;
   private int searchRange = 4;
   private int searchAttempts = 10;
-
   public EntityAIFlyingLand(EntityCreature creature, double speedIn) {
     entity = creature;
     speed = speedIn;
     setMutexBits(1);
   }
-
   @Override
   public boolean shouldExecute() {
-    if (entity.onGround || !entity.getNavigator().noPath()) {
-      return false;
-    }
+    if (entity.onGround || !entity.getNavigator().noPath()) { return false; }
     BlockPos target = null;
     BlockPos ep = entity.getPosition();
     // Land just bellow us if we can
@@ -61,7 +55,6 @@ public class EntityAIFlyingLand extends EntityAIBase {
     targetZ = target.getZ() + 0.5;
     return true;
   }
-
   @Override
   public void startExecuting() {
     onGroundCount = 0;
@@ -69,7 +62,6 @@ public class EntityAIFlyingLand extends EntityAIBase {
       //      System.out.println("EntityAIFlyingLand.startExecuting: No path to target");
     }
   }
-
   @Override
   public boolean shouldContinueExecuting() {
     if (entity.onGround) {
