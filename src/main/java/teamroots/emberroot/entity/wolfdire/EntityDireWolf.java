@@ -34,10 +34,10 @@ import teamroots.emberroot.util.EntityUtil;
  */
 public class EntityDireWolf extends EntityMob {
   public static final String NAME = "dire_wolf";
-  public static final SoundEvent SND_HURT = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.hurt"));
-  public static final SoundEvent SND_HOWL = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.howl"));
-  public static final SoundEvent SND_GROWL = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.growl"));
-  public static final SoundEvent SND_DEATH = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.death"));
+  public static SoundEvent SND_HURT; // = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.hurt"));
+  public static SoundEvent SND_HOWL; // = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.howl"));
+  public static SoundEvent SND_GROWL; // = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.growl"));
+  public static SoundEvent SND_DEATH; // = new SoundEvent(new ResourceLocation(Const.MODID, "direwolf.death"));
   public static enum VariantColors {
     WHITE, GREY, BLACK;
     public String nameLower() {
@@ -50,7 +50,7 @@ public class EntityDireWolf extends EntityMob {
   private static final int direWolfPackHowlAmount = 3;
   private EntityLivingBase previsousAttackTarget;
   private float direWolfHowlChance = 0.1F;
-  private boolean direWolfPackAttackEnabled = true;
+  public static boolean direWolfPackAttackEnabled = true;
   private int maxSpawnedInChunk = 6;
   private static int packHowl = 0;
   private static long lastHowl = 0;

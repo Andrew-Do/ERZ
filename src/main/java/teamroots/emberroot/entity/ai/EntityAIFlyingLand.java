@@ -77,7 +77,7 @@ public class EntityAIFlyingLand extends EntityAIBase {
       if (onGroundCount >= 40) {
         // If we have been on the ground for a couple of seconds
         // time to chill no matter what
-        entity.getNavigator().clearPathEntity();
+        entity.getNavigator().clearPath();
         return false;
       }
       // Stop if we are on the ground in the middle of a block
@@ -87,7 +87,7 @@ public class EntityAIFlyingLand extends EntityAIBase {
         BlockPos bellow = entity.getPosition().down();
         IBlockState bs = entity.getEntityWorld().getBlockState(bellow);
         if (!bs.getBlock().isAir(bs, entity.getEntityWorld(), bellow)) {
-          entity.getNavigator().clearPathEntity();
+          entity.getNavigator().clearPath();
           return false;
         }
       }

@@ -99,7 +99,6 @@ public class ParticleFairyGlow extends Particle implements IParticleTracked {
 
   @Override
   public boolean renderThroughBlocks() {
-    // TODO Auto-generated method stub
     return false;
   }
 

@@ -40,7 +40,7 @@ public class EntityAIFollow extends EntityAIBase {
   @Override
   public boolean shouldExecute() {
     if (this.entity != null && this.target != null) {
-      if (this.entity.getDistanceSqToEntity(target) < (double) (this.minDist * this.minDist)) {
+      if (this.entity.getDistanceSq(target) < (double) (this.minDist * this.minDist)) {
         return false;
       }
       return true;
@@ -49,7 +49,7 @@ public class EntityAIFollow extends EntityAIBase {
   }
 
   public boolean continueExecuting() {
-    return !this.pathfinder.noPath() && this.entity.getDistanceSqToEntity(this.target) > (double) (this.maxDist * this.maxDist);
+    return !this.pathfinder.noPath() && this.entity.getDistanceSq(this.target) > (double) (this.maxDist * this.maxDist);
   }
 
   public void startExecuting() {
@@ -60,7 +60,7 @@ public class EntityAIFollow extends EntityAIBase {
 
   public void resetTask() {
     this.target = null;
-    this.pathfinder.clearPathEntity();
+    this.pathfinder.clearPath();
     this.entity.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
   }
 
@@ -76,7 +76,7 @@ public class EntityAIFollow extends EntityAIBase {
       this.timeToRecalcPath = 10;
       if (!this.pathfinder.tryMoveToEntityLiving(this.target, this.followSpeed)) {
         if (!this.entity.getLeashed()) {
-          if (this.entity.getDistanceSqToEntity(this.target) >= 144.0D) {
+          if (this.entity.getDistanceSq(this.target) >= 144.0D) {
             int i = MathHelper.floor(this.target.posX) - 2;
             int j = MathHelper.floor(this.target.posZ) - 2;
             int k = MathHelper.floor(this.target.getEntityBoundingBox().minY);
@@ -84,7 +84,7 @@ public class EntityAIFollow extends EntityAIBase {
               for (int i1 = 0; i1 <= 4; ++i1) {
                 if ((l < 1 || i1 < 1 || l > 3 || i1 > 3) && this.world.getBlockState(new BlockPos(i + l, k - 1, j + i1)).isFullCube() && this.isEmptyBlock(new BlockPos(i + l, k, j + i1)) && this.isEmptyBlock(new BlockPos(i + l, k + 1, j + i1))) {
                   this.entity.setLocationAndAngles((double) ((float) (i + l) + 0.5F), (double) k, (double) ((float) (j + i1) + 0.5F), this.entity.rotationYaw, this.entity.rotationPitch);
-                  this.pathfinder.clearPathEntity();
+                  this.pathfinder.clearPath();
                   return;
                 }
               }

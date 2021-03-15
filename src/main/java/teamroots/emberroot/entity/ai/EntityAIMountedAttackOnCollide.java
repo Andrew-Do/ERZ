@@ -90,7 +90,7 @@ public class EntityAIMountedAttackOnCollide extends EntityAIBase {
    * Resets the task
    */
   public void resetTask() {
-    getNavigator().clearPathEntity();
+    getNavigator().clearPath();
   }
 
   /**

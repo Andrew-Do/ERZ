@@ -80,7 +80,7 @@ public class EntityAIRangedAttack extends EntityAIBase {
       timeTargetVisible = 0;
     }
     if (distToTargetSq <= attackRangeSq && timeTargetVisible >= 20) {
-      entityHost.getNavigator().clearPathEntity();
+      entityHost.getNavigator().clearPath();
     }
     else if (timeTargetHidden < 100) {
       entityHost.getNavigator().tryMoveToEntityLiving(attackTarget, entityMoveSpeed);

@@ -34,7 +34,7 @@ public class ItemOwlEgg extends Item {
     if (!worldIn.isRemote) {
       EntityOwlEgg entityEgg = new EntityOwlEgg(worldIn, playerIn);
       //without setHeading the egg just falls to the players feet
-      entityEgg.setHeadingFromThrower(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, PITCHOFFSET, VELOCITY_DEFAULT, INACCURACY_DEFAULT);
+      entityEgg.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, PITCHOFFSET, VELOCITY_DEFAULT, INACCURACY_DEFAULT);
       worldIn.spawnEntity(entityEgg);
     }
     return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);

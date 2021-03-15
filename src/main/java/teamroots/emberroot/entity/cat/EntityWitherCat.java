@@ -31,7 +31,7 @@ import net.minecraft.world.World;
 import teamroots.emberroot.Const;
 import teamroots.emberroot.config.ConfigSpawnEntity;
 import teamroots.emberroot.entity.ai.EntityAIAttackOnCollideOwned;
-import teamroots.emberroot.entity.ai.EntityAIFollowOwner;
+import teamroots.emberroot.entity.ai.EntityAIERZFollowOwner;
 import teamroots.emberroot.entity.ai.IOwnable;
 import teamroots.emberroot.entity.witch.EntityWitherWitch;
 import teamroots.emberroot.util.EntityUtil;
@@ -57,7 +57,7 @@ public class EntityWitherCat extends EntityMob implements IOwnable<EntityWitherC
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityWitherCat.class, EnumCreatureType.MONSTER);
   private float lastScale = 1f;
   private EntityWitherWitch owner;
-  private EntityAIFollowOwner followTask;
+  private EntityAIERZFollowOwner followTask;
   private boolean attackTargetChanged = false;
 
   public EntityWitherCat(World world) {
@@ -75,8 +75,8 @@ public class EntityWitherCat extends EntityMob implements IOwnable<EntityWitherC
   @Override
   protected void initEntityAI() {
     super.initEntityAI();
-    followTask = new EntityAIFollowOwner(this, 2.5, 5, 1);
-    EntityAIFollowOwner retreatTask = new EntityAIFollowOwner(this, 2.5, 5, 2.5);
+    followTask = new EntityAIERZFollowOwner(this, 2.5, 5, 1);
+    EntityAIERZFollowOwner retreatTask = new EntityAIERZFollowOwner(this, 2.5, 5, 2.5);
     tasks.addTask(1, new EntityAISwimming(this));
     tasks.addTask(2, new EntityAIAttackOnCollideOwned(this, EntityPlayer.class, 2.5, false, retreatTask));
     tasks.addTask(3, followTask);

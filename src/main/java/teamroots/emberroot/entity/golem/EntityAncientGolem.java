@@ -135,26 +135,26 @@ public class EntityAncientGolem extends EntityMob {
     this.tasks.addTask(7, new EntityAIWander(this, 0.46D*speedup));
     this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
     this.tasks.addTask(8, new EntityAILookIdle(this));
-    this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+    this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
     if (attacksSomeMobs) {
       switch (this.getVariantEnum()) {
         case BLUE:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySlime.class, true));
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntitySlime.class, true));
         break;
         case GREEN:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityZombie.class, true));
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityZombie.class, true));
         break;
         case ORANGE:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, true));
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntitySkeleton.class, true));
         break;
         case PURPLE:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityEnderman.class, true));
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityEnderman.class, true));
         break;
         case RED:
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPigZombie.class, true));
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityPigZombie.class, true));
         break;
         case YELLOW://gold is the only one starting passive to the player
-          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityDeer.class, true));
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityDeer.class, true));
         break;
         default:
         break;

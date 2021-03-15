@@ -156,14 +156,14 @@ public class FlyingPathNavigate extends PathNavigateGround {
   @Override
   protected void checkForStuck(Vec3d positionVec3) {
     if (totalTicks - ticksAtLastPos > 10 && positionVec3.squareDistanceTo(lastPosCheck) < 0.0625) {
-      clearPathEntity();
+      clearPath();
       ticksAtLastPos = totalTicks;
       lastPosCheck = positionVec3;
       return;
     }
     if (totalTicks - ticksAtLastPos > 50) {
       if (positionVec3.squareDistanceTo(lastPosCheck) < 2.25D) {
-        clearPathEntity();
+        clearPath();
       }
       ticksAtLastPos = totalTicks;
       lastPosCheck = positionVec3;

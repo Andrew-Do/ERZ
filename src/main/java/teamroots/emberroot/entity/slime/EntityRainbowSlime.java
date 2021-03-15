@@ -141,7 +141,7 @@ public class EntityRainbowSlime extends EntitySlime {
 
   private void spawnLingeringPotion(PotionType type) {
     EntityPotion entitypotion = new EntityPotion(world, this, PotionUtils.addPotionToItemStack(new ItemStack(Items.LINGERING_POTION), type));
-    entitypotion.setThrowableHeading(0, 1, 0, 0.05F, 1.0F);
+    entitypotion.shoot(0, 1, 0, 0.05F, 1.0F);
     if (world.isRemote == false) {
       world.spawnEntity(entitypotion);
     }

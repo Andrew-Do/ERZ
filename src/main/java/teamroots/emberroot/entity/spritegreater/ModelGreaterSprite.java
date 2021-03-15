@@ -210,11 +210,11 @@ public class ModelGreaterSprite extends ModelBase {
     if (((EntityGreaterSprite) entity).twirlTimer > 0) {
       GlStateManager.rotate((float) 18.0f * (20.0f - (float) ((EntityGreaterSprite) entity).twirlTimer), 0, 0, 1);
     }
-    if (!((EntityGreaterSprite) entity).getDataManager().get(((EntityGreaterSprite) entity).stunned).booleanValue()) {
+    if (!((EntityGreaterSprite) entity).getDataManager().get(EntityGreaterSprite.stunned).booleanValue()) {
       GlStateManager.rotate((float) (15.0f * Math.sin(Math.PI * 2.0 * (((double) (entity.ticksExisted % 20)) / 20.0))), 0, 0, 1);
     }
     stonehead1.render(1.0f / 16.0f);
-    if (!((EntityGreaterSprite) entity).getDataManager().get(((EntityGreaterSprite) entity).stunned).booleanValue()) {
+    if (!((EntityGreaterSprite) entity).getDataManager().get(EntityGreaterSprite.stunned).booleanValue()) {
       GlStateManager.rotate((float) (-15.0f * Math.sin(Math.PI * 2.0 * (((double) (entity.ticksExisted % 20)) / 20.0))), 0, 0, 1);
     }
     if (((EntityGreaterSprite) entity).twirlTimer > 0) {
@@ -236,11 +236,11 @@ public class ModelGreaterSprite extends ModelBase {
     if (((EntityGreaterSprite) entity).twirlTimer > 0) {
       GlStateManager.rotate((float) 18.0f * (20.0f - (float) ((EntityGreaterSprite) entity).twirlTimer), 0, 0, 1);
     }
-    if (!((EntityGreaterSprite) entity).getDataManager().get(((EntityGreaterSprite) entity).stunned).booleanValue()) {
+    if (!((EntityGreaterSprite) entity).getDataManager().get(EntityGreaterSprite.stunned).booleanValue()) {
       GlStateManager.rotate((float) (15.0f * Math.sin(Math.PI * 2.0 * (((double) (entity.ticksExisted % 20)) / 20.0))), 0, 0, 1);
     }
     head1.render(1.0f / 16.0f);
-    if (!((EntityGreaterSprite) entity).getDataManager().get(((EntityGreaterSprite) entity).stunned).booleanValue()) {
+    if (!((EntityGreaterSprite) entity).getDataManager().get(EntityGreaterSprite.stunned).booleanValue()) {
       GlStateManager.rotate((float) (-15.0f * Math.sin(Math.PI * 2.0 * (((double) (entity.ticksExisted % 20)) / 20.0))), 0, 0, 1);
     }
     if (((EntityGreaterSprite) entity).twirlTimer > 0) {

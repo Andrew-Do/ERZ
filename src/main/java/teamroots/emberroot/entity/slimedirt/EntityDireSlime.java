@@ -165,7 +165,7 @@ public class EntityDireSlime extends EntityMagmaCube {
   @Override
   public void setSlimeSize(int size, boolean doFullHeal) {
     super.setSlimeSize(size, doFullHeal);
-    SlimeConf conf = SlimeConf.getConfForSize(size);
+    // SlimeConf conf = SlimeConf.getConfForSize(size);
     //    getAttributeMap().getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(conf.attackDamage);
     //    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(conf.health);
     setHealth(getMaxHealth());
@@ -271,7 +271,7 @@ public class EntityDireSlime extends EntityMagmaCube {
   @Override
   public void onCollideWithPlayer(EntityPlayer player) {
     int i = getSlimeSize();
-    if (canEntityBeSeen(player) && this.getDistanceSqToEntity(player) < (double) i * (double) i
+    if (canEntityBeSeen(player) && this.getDistanceSq(player) < (double) i * (double) i
         && player.attackEntityFrom(DamageSource.causeMobDamage(this), getAttackStrength())) {
       playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
     }

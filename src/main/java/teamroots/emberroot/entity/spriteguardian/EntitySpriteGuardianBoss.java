@@ -3,7 +3,6 @@ package teamroots.emberroot.entity.spriteguardian;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockWorldState;
@@ -13,7 +12,6 @@ import net.minecraft.block.state.pattern.BlockPattern;
 import net.minecraft.block.state.pattern.BlockStateMatcher;
 import net.minecraft.block.state.pattern.FactoryBlockPattern;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -41,7 +39,6 @@ import teamroots.emberroot.config.ConfigSpawnEntity;
 import teamroots.emberroot.entity.sprite.EntitySprite;
 import teamroots.emberroot.entity.spritegreater.EntityGreaterSprite;
 import teamroots.emberroot.entity.spritegreater.EntitySpriteProjectile;
-import teamroots.emberroot.entity.witch.EntityWitherWitch;
 import teamroots.emberroot.util.EntityUtil;
 import teamroots.emberroot.util.Util;
 
@@ -137,7 +134,6 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
       return;
     }
     float velocityScale = 1.0f;
-    float addedMotionY = 0.0f;
     if (getDataManager().get(pacified) && getDataManager().get(fadeTimer) > 0) {
       getDataManager().set(fadeTimer, getDataManager().get(fadeTimer) - 1);
       getDataManager().setDirty(fadeTimer);
@@ -404,7 +400,7 @@ public class EntitySpriteGuardianBoss extends EntityFlying {// implements IRange
       getDataManager().setDirty(pacified);
       getDataManager().set(fadeTimer, 200);
       if (source.getTrueSource() instanceof EntityPlayer) {
-        EntityPlayer player = (EntityPlayer) source.getTrueSource();
+        // EntityPlayer player = (EntityPlayer) source.getTrueSource();
         //        if (!player.hasAchievement(RegistryManager.achieveGuardianBoss)) {
         //          PlayerManager.addAchievement(player, RegistryManager.achieveGuardianBoss);
         //        }

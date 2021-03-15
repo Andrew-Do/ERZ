@@ -14,7 +14,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
-import teamroots.emberroot.util.PPUtil;
 import teamroots.emberroot.util.SpawnUtil;
 
 public class FlyingPathFinder extends PathFinder {
@@ -46,7 +45,7 @@ public class FlyingPathFinder extends PathFinder {
       return null;
     }
     EntityLiving entityIn = (EntityLiving) ent;
-    nodeProcessor.initProcessor(blockaccess, (EntityLiving) entityIn);
+    nodeProcessor.init(blockaccess, (EntityLiving) entityIn);
     PathPoint startPoint = nodeProcessor.getStart();
     PathPoint endPoint = nodeProcessor.getPathPointToCoords(x, y, z);
     Vec3d targ = new Vec3d(x, y, z);
@@ -85,7 +84,7 @@ public class FlyingPathFinder extends PathFinder {
     resPoints.addAll(Arrays.asList(points));
     //then path from the climb point to destination
     path.clearPath();
-    nodeProcessor.initProcessor(blockaccess, (EntityLiving) entityIn);
+    nodeProcessor.init(blockaccess, (EntityLiving) entityIn);
     //climbPoint.index = -1;
     climbPoint = new PathPoint(climbPoint.x, climbPoint.y, climbPoint.z);
     points = addToPath(entityIn, climbPoint, endPoint, distance);
@@ -102,15 +101,10 @@ public class FlyingPathFinder extends PathFinder {
 
   private PathPoint[] addToPath(Entity entityIn, PathPoint pathpointStart, PathPoint pathpointEnd, float maxDistance) {
     // set start point values
-    //    pathpointStart.totalPathDistance = 0.0F;
-    //    pathpointStart.distanceToNext = pathpointStart.distanceToSquared(pathpointEnd);
-    //    pathpointStart.distanceToTarget = pathpointStart.distanceToNext;
-    //    pathpointStart.index = -1;        
-    PPUtil.setTotalPathDistance(pathpointStart, 0f);
-    float dist = pathpointStart.distanceToSquared(pathpointEnd);
-    PPUtil.setDistanceToNext(pathpointStart, dist);
-    PPUtil.setDistanceToTarget(pathpointStart, dist);
-    PPUtil.setIndex(pathpointStart, -1);
+    pathpointStart.totalPathDistance = 0.0F;
+    pathpointStart.distanceToNext = pathpointStart.distanceToSquared(pathpointEnd);
+    pathpointStart.distanceToTarget = pathpointStart.distanceToNext;
+    pathpointStart.index = -1;
     // clear and add out start point to the path
     path.clearPath();
     path.addPoint(pathpointStart);
@@ -133,20 +127,16 @@ public class FlyingPathFinder extends PathFinder {
       //int numPathOptions = nodeProcessor.findPathOptions(pathOptions, entityIn, dequeued, pathpointEnd, maxDistance);
       for (int j = 0; j < numPathOptions; ++j) {
         PathPoint cadidatePoint = pathOptions[j];
-        float newTotalDistance = PPUtil.getTotalPathDistance(dequeued) + dequeued.distanceToSquared(cadidatePoint);
-        if (newTotalDistance < maxDistance * 2.0F && (!cadidatePoint.isAssigned() || newTotalDistance < PPUtil.getTotalPathDistance(cadidatePoint))) {
-          //cadidatePoint.previous = dequeued;
-          PPUtil.setPrevious(cadidatePoint, dequeued);
-          //cadidatePoint.totalPathDistance = newTotalDistance;
-          PPUtil.setTotalPathDistance(cadidatePoint, newTotalDistance);
-          //cadidatePoint.distanceToNext = cadidatePoint.distanceToSquared(pathpointEnd);
-          PPUtil.setDistanceToNext(cadidatePoint, cadidatePoint.distanceToSquared(pathpointEnd));
+        float newTotalDistance = dequeued.totalPathDistance + dequeued.distanceToSquared(cadidatePoint);
+        if (newTotalDistance < maxDistance * 2.0F && (!cadidatePoint.isAssigned() || newTotalDistance < cadidatePoint.totalPathDistance)) {
+          cadidatePoint.previous = dequeued;
+          cadidatePoint.totalPathDistance = newTotalDistance;
+          cadidatePoint.distanceToNext = cadidatePoint.distanceToSquared(pathpointEnd);
           if (cadidatePoint.isAssigned()) {
-            //path.changeDistance(cadidatePoint, cadidatePoint.totalPathDistance + cadidatePoint.distanceToNext);
-            path.changeDistance(cadidatePoint, PPUtil.getTotalPathDistance(cadidatePoint) + PPUtil.getDistanceToNext(cadidatePoint));
+            path.changeDistance(cadidatePoint, cadidatePoint.totalPathDistance + cadidatePoint.distanceToNext);
           }
           else {
-            PPUtil.setDistanceToTarget(cadidatePoint, PPUtil.getTotalPathDistance(cadidatePoint) + PPUtil.getDistanceToNext(cadidatePoint));
+            cadidatePoint.distanceToTarget = cadidatePoint.totalPathDistance + cadidatePoint.distanceToNext;
             path.addPoint(cadidatePoint);
           }
         }
@@ -177,7 +167,7 @@ public class FlyingPathFinder extends PathFinder {
 
   private Path createDefault(IBlockAccess blockaccess, EntityLiving entityIn, float distance, double x, double y, double z) {
     this.path.clearPath();
-    this.nodeProcessor.initProcessor(blockaccess, entityIn);
+    this.nodeProcessor.init(blockaccess, entityIn);
     //    PathPoint pathpoint1 =nodeProcessor.getPathPointToCoords(entityIn, x, y, z);    
     PathPoint pathpoint = nodeProcessor.getStart();
     PathPoint pathpoint1 = nodeProcessor.getPathPointToCoords(x, y, z);
@@ -195,14 +185,14 @@ public class FlyingPathFinder extends PathFinder {
 
   private static PathPoint[] createEntityPath(PathPoint start, PathPoint end) {
     int i = 1;
-    for (PathPoint pathpoint = end; PPUtil.getPrevious(pathpoint) != null; pathpoint = PPUtil.getPrevious(pathpoint)) {
+    for (PathPoint pathpoint = end; pathpoint.previous != null; pathpoint = pathpoint.previous) {
       ++i;
     }
     PathPoint[] apathpoint = new PathPoint[i];
     PathPoint pathpoint1 = end;
     --i;
-    for (apathpoint[i] = end; PPUtil.getPrevious(pathpoint1) != null; apathpoint[i] = pathpoint1) {
-      pathpoint1 = PPUtil.getPrevious(pathpoint1);
+    for (apathpoint[i] = end; pathpoint1.previous != null; apathpoint[i] = pathpoint1) {
+      pathpoint1 = pathpoint1.previous;
       --i;
     }
     return apathpoint;

@@ -19,7 +19,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
@@ -36,8 +35,9 @@ import teamroots.emberroot.util.IRenderEntityLater;
 
 public class EventManager {
 
+  @SuppressWarnings("deprecation")
   @SubscribeEvent
-  public void onBlockPlace(PlaceEvent event) {
+  public void onBlockPlace(net.minecraftforge.event.world.BlockEvent.PlaceEvent event) {
     trySpawnBoss(event.getWorld(), event.getPos());
   }
 
@@ -115,7 +115,7 @@ public class EventManager {
   }
 
   @SideOnly(Side.CLIENT)
-  public static void renderEntityStatic(Entity entityIn, float partialTicks, boolean b, Render render) {
+  public static void renderEntityStatic(Entity entityIn, float partialTicks, boolean b, Render<?> render) {
     if (entityIn.ticksExisted == 0) {
       entityIn.lastTickPosX = entityIn.posX;
       entityIn.lastTickPosY = entityIn.posY;
@@ -151,7 +151,7 @@ public class EventManager {
     //OpenGlHelper.glUseProgram(ShaderUtil.lightProgram);
     GlStateManager.pushMatrix();
     for (Entity e : Minecraft.getMinecraft().world.getLoadedEntityList()) {
-      Render render = Minecraft.getMinecraft().getRenderManager().getEntityRenderObject(e);
+      Render<Entity> render = Minecraft.getMinecraft().getRenderManager().getEntityRenderObject(e);
       if (render instanceof IRenderEntityLater) {
         renderEntityStatic(e, Minecraft.getMinecraft().getRenderPartialTicks(), true, render);
       }
