@@ -1,4 +1,5 @@
 package teamroots.emberroot.entity.golem;
+
 import java.awt.Color;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
@@ -21,7 +22,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
@@ -30,14 +33,23 @@ import teamroots.emberroot.config.ConfigSpawnEntity;
 import teamroots.emberroot.entity.deer.EntityDeer;
 
 public class EntityAncientGolem extends EntityMob {
+
   public static final DataParameter<Integer> variant = EntityDataManager.<Integer> createKey(EntityAncientGolem.class, DataSerializers.VARINT);
   public static final DataParameter<Integer> FIRESPEED = EntityDataManager.<Integer> createKey(EntityAncientGolem.class, DataSerializers.VARINT);
-  public static final String NAME = "ancient_golem";
+  public static final String NAME = "rainbow_golem";
+  public static SoundEvent ambientSound;
+  public static SoundEvent hurtSound;
+  public static SoundEvent deathSound;
+  public static float speedup = 1;
+  public static float fireRateModifier = 1;
+
   public static enum VariantColors {
     RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE;
+
     public String nameLower() {
       return this.name().toLowerCase();
     }
+
     /**
      * r,g,b passed into projectile shot
      * 
@@ -63,18 +75,24 @@ public class EntityAncientGolem extends EntityMob {
       return null;//new Color(0, 0, 0);
     }
   }
+
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityAncientGolem.class, EnumCreatureType.MONSTER);
+  public static boolean attacksSomeMobs;
+
   public EntityAncientGolem(World worldIn) {
     super(worldIn);
     setSize(0.6f, 1.8f);
     this.experienceValue = 10;
   }
+
   public Integer getVariant() {
     return getDataManager().get(variant);
   }
+
   public VariantColors getVariantEnum() {
     return VariantColors.values()[getVariant()];
   }
+
   @Override
   protected void entityInit() {
     super.entityInit();
@@ -93,6 +111,7 @@ public class EntityAncientGolem extends EntityMob {
       break;
     }
   }
+
   @Override
   public String getName() {
     if (this.hasCustomName()) {
@@ -107,54 +126,55 @@ public class EntityAncientGolem extends EntityMob {
       return I18n.translateToLocal("entity." + s + "." + var + ".name");
     }
   }
+
   @Override
   protected void initEntityAI() {
     this.tasks.addTask(0, new EntityAISwimming(this));
-    this.tasks.addTask(2, new EntityAIAttackMelee(this, 0.46D, true));
-    this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 0.46D));
-    this.tasks.addTask(7, new EntityAIWander(this, 0.46D));
+    this.tasks.addTask(2, new EntityAIAttackMelee(this, 0.46D*speedup, true));
+    this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 0.46D*speedup));
+    this.tasks.addTask(7, new EntityAIWander(this, 0.46D*speedup));
     this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
     this.tasks.addTask(8, new EntityAILookIdle(this));
-    switch (this.getVariantEnum()) {
-      case BLUE:
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySlime.class, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-      break;
-      case GREEN:
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityZombie.class, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-      break;
-      case ORANGE:
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-      break;
-      case PURPLE:
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityEnderman.class, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-      break;
-      case RED:
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPigZombie.class, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-      break;
-      case YELLOW://gold is the only one starting passive to the player
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityDeer.class, true));
-      break;
-      default:
-      break;
+    this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+    if (attacksSomeMobs) {
+      switch (this.getVariantEnum()) {
+        case BLUE:
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySlime.class, true));
+        break;
+        case GREEN:
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityZombie.class, true));
+        break;
+        case ORANGE:
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, true));
+        break;
+        case PURPLE:
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityEnderman.class, true));
+        break;
+        case RED:
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPigZombie.class, true));
+        break;
+        case YELLOW://gold is the only one starting passive to the player
+          this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityDeer.class, true));
+        break;
+        default:
+        break;
+      }
     }
   }
+
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
     this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-    this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+    //    this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
     ConfigSpawnEntity.syncInstance(this, config.settings);
   }
+
   @Override
   public void onUpdate() {
     super.onUpdate();
     this.rotationYaw = this.rotationYawHead;
-    if (this.ticksExisted % getDataManager().get(FIRESPEED) == 0 && this.getAttackTarget() != null) {
+    if (this.ticksExisted % getDataManager().get(FIRESPEED) * fireRateModifier == 0 && this.getAttackTarget() != null) {
       if (!getEntityWorld().isRemote) {
         EntityGolemLaser proj = new EntityGolemLaser(getEntityWorld());
         proj.getDataManager().set(EntityGolemLaser.variant, this.getVariant());
@@ -163,18 +183,36 @@ public class EntityAncientGolem extends EntityMob {
       }
     }
   }
+
   @Override
   public void readEntityFromNBT(NBTTagCompound compound) {
     super.readEntityFromNBT(compound);
     getDataManager().set(variant, compound.getInteger("variant"));
   }
+
   @Override
   public void writeEntityToNBT(NBTTagCompound compound) {
     super.writeEntityToNBT(compound);
     compound.setInteger("variant", getDataManager().get(variant));
   }
+
   @Override
   public ResourceLocation getLootTable() {
     return new ResourceLocation(Const.MODID, "entity/golem_" + getVariantEnum().nameLower());
+  }
+
+  @Override
+  protected SoundEvent getAmbientSound() {
+    return ambientSound;
+  }
+
+  @Override
+  protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+    return hurtSound;
+  }
+
+  @Override
+  protected SoundEvent getDeathSound() {
+    return deathSound;
   }
 }

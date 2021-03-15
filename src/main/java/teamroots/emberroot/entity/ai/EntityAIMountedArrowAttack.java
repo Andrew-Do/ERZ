@@ -1,4 +1,5 @@
 package teamroots.emberroot.entity.ai;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
@@ -14,6 +15,7 @@ import teamroots.emberroot.util.SpawnUtil;
 import teamroots.emberroot.util.VecUtil;
 
 public class EntityAIMountedArrowAttack extends EntityAIBase {
+
   private final EntityLiving entityHost;
   private final IRangedAttackMob rangedAttackEntityHost;
   private EntityLivingBase attackTarget;
@@ -28,6 +30,7 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
   private int runAwayTimer = 0;
   private PathPoint runningAwayTo;
   private boolean useRunAwayTactic;
+
   public EntityAIMountedArrowAttack(IRangedAttackMob host, double moveSpeed, double mountedEntityMoveSpeed, int minAttackTime, int maxAttackTime,
       float attackRange, boolean useRunAwayTactic) {
     timeUntilNextAttack = -1;
@@ -42,6 +45,7 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
     this.useRunAwayTactic = useRunAwayTactic;
     setMutexBits(3);
   }
+
   @Override
   public boolean shouldExecute() {
     EntityLivingBase toAttack = entityHost.getAttackTarget();
@@ -53,10 +57,12 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
       return true;
     }
   }
+
   @Override
   public boolean shouldContinueExecuting() {
     return shouldExecute() || !getNavigator().noPath();
   }
+
   @Override
   public void resetTask() {
     attackTarget = null;
@@ -65,6 +71,7 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
     runAwayTimer = 0;
     runningAwayTo = null;
   }
+
   /**
    * Updates the task
    */
@@ -98,7 +105,9 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
     }
     entityHost.getLookHelper().setLookPositionWithEntity(attackTarget, 30.0F, 30.0F);
     if (--timeUntilNextAttack == 0) {
-      if (distToTargetSq > attackRangeSq || !canSeeTarget) { return; }
+      if (distToTargetSq > attackRangeSq || !canSeeTarget) {
+        return;
+      }
       float rangeRatio = MathHelper.sqrt(distToTargetSq) / attackRange;
       rangeRatio = MathHelper.clamp(rangeRatio, 0.1f, 1);
       rangedAttackEntityHost.attackEntityWithRangedAttack(attackTarget, rangeRatio);
@@ -109,8 +118,11 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
       timeUntilNextAttack = MathHelper.floor(rangeRatio * (maxRangedAttackTime - minRangedAttackTime) + minRangedAttackTime);
     }
   }
+
   private boolean isRunningAway() {
-    if (runningAwayTo == null) { return false; }
+    if (runningAwayTo == null) {
+      return false;
+    }
     if (getNavigator().noPath()) {
       runningAwayTo = null;
       return false;
@@ -118,8 +130,11 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
     PathPoint dest = getNavigator().getPath().getFinalPathPoint();
     return dest.equals(runningAwayTo);
   }
+
   private boolean runAway() {
-    if (!useRunAwayTactic) { return false; }
+    if (!useRunAwayTactic) {
+      return false;
+    }
     runAwayTimer = 40;
     Vec3d targetDir = new Vec3d(attackTarget.posX, attackTarget.getEntityBoundingBox().minY, attackTarget.posZ);
     Vec3d entityPos = EntityUtil.getEntityPosition(entityHost);
@@ -132,7 +147,9 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
     Point3i probePoint = new Point3i((int) Math.round(targetDir.x), (int) Math.round(entityHost.posY), (int) Math.round(targetDir.z));
     Point3i target = new Point3i(probePoint);
     World world = entityHost.getEntityWorld();
-    if (!SpawnUtil.findClearGround(world, target, probePoint)) { return false; }
+    if (!SpawnUtil.findClearGround(world, target, probePoint)) {
+      return false;
+    }
     boolean res = getNavigator().tryMoveToXYZ(probePoint.x, probePoint.y, probePoint.z, mountedEntityMoveSpeed);
     if (getNavigator().noPath()) {
       runningAwayTo = null;
@@ -142,10 +159,14 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
     }
     return res;
   }
+
   private double getMoveSpeed() {
-    if (entityHost.isRiding()) { return mountedEntityMoveSpeed; }
+    if (entityHost.isRiding()) {
+      return mountedEntityMoveSpeed;
+    }
     return entityMoveSpeed;
   }
+
   protected PathNavigate getNavigator() {
     return entityHost.getNavigator();
   }

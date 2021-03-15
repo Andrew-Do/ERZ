@@ -1,4 +1,5 @@
 package teamroots.emberroot.entity.slimedirt;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import teamroots.emberroot.Const;
+import teamroots.emberroot.config.ConfigManager;
 import teamroots.emberroot.config.ConfigSpawnEntity;
 import teamroots.emberroot.util.SpawnUtil;
 
@@ -30,58 +32,98 @@ import teamroots.emberroot.util.SpawnUtil;
  * Original author: https://github.com/CrazyPants
  */
 public class EntityDireSlime extends EntityMagmaCube {
+
   public static final String NAME = "slime";
+
   public static enum VariantColors {
     DIRT, SAND, STONE, GRAVEL, NETHER, SNOW, END;
+
     public String nameLower() {
       return this.name().toLowerCase();
     }
   }
+
   public static final DataParameter<Integer> variant = EntityDataManager.<Integer> createKey(EntityDireSlime.class, DataSerializers.VARINT);
+
   public enum SlimeConf {
-    SMALL(1, 4, 3, 0.4), MEDIUM(2, 8, 5, 0.2), LARGE(4, 20, 8, 0.4);
+    //WAS attack damage
+    //small , 4, 3,, medium 8,5, large 20,8
+    SMALL(1, 0.4), MEDIUM(2, 0.2), LARGE(4, 0.4);
+
     public final int size;
-    public final double health;
-    public final double attackDamage;
+    //   public final double health;
+    // public final double attackDamage;
     public final double chance;
-    private SlimeConf(int size, double health, double attackDamage, double chance) {
+
+    private SlimeConf(int size, double chance) {
       this.size = size;
-      this.health = health;
-      this.attackDamage = attackDamage;
+      // this.health = health;
+      //this.attackDamage = attackDamage;
       this.chance = chance;
     }
+
     static SlimeConf getConfForSize(int size) {
       for (SlimeConf conf : values()) {
-        if (conf.size == size) { return conf; }
+        if (conf.size == size) {
+          return conf;
+        }
       }
       return SMALL;
     }
+
     SlimeConf bigger() {
       int index = ordinal() + 1;
-      if (index >= values().length) { return null; }
+      if (index >= values().length) {
+        return null;
+      }
       return values()[index];
     }
   }
+
+  @Override
+  public int getMaxSpawnedInChunk() {
+    return config.settings.max;
+  }
+
+  @Override
+  public boolean getCanSpawnHere() {
+    int i = MathHelper.floor(this.posX);
+    int j = MathHelper.floor(this.getEntityBoundingBox().minY);
+    int k = MathHelper.floor(this.posZ);
+    BlockPos blockpos = new BlockPos(i, j, k);
+    boolean canSpawn = this.world.getBlockState(blockpos.down()).getBlock() != Blocks.AIR
+        && this.world.getLight(blockpos) < ConfigManager.LIGHT_LEVEL
+        && super.getCanSpawnHere()
+        && this.rand.nextInt(config.settings.weightedProb) == 0;
+    return canSpawn;
+  }
+
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityDireSlime.class, EnumCreatureType.MONSTER);
+
   public EntityDireSlime(World world) {
     super(world);
     setSlimeSize(1, false);
   }
+
   public Integer getVariant() {
     return getDataManager().get(variant);
   }
+
   public VariantColors getVariantEnum() {
     return VariantColors.values()[getVariant()];
   }
+
   @Override
   protected void entityInit() {
     super.entityInit();
     this.getDataManager().register(variant, rand.nextInt(VariantColors.values().length));
   }
+
   private boolean blockHereMatches(Block target, BlockPos pos) { //
     Block blockBelow = this.world.getBlockState(pos).getBlock();
     return OreDictionary.itemMatches(new ItemStack(target), new ItemStack(blockBelow), false);
   }
+
   @Override
   public void onUpdate() {
     super.onUpdate();
@@ -119,14 +161,16 @@ public class EntityDireSlime extends EntityMagmaCube {
       dataManager.setDirty(variant);
     }
   }
+
   @Override
   public void setSlimeSize(int size, boolean doFullHeal) {
     super.setSlimeSize(size, doFullHeal);
     SlimeConf conf = SlimeConf.getConfForSize(size);
-    getAttributeMap().getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(conf.attackDamage);
-    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(conf.health);
+    //    getAttributeMap().getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(conf.attackDamage);
+    //    getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(conf.health);
     setHealth(getMaxHealth());
   }
+
   @Override
   public void onDeath(DamageSource damageSource) {
     super.onDeath(damageSource);
@@ -143,15 +187,18 @@ public class EntityDireSlime extends EntityMagmaCube {
       }
     }
   }
+
   @Override
   public void setDead() {
     //Override to prevent smaller slimes spawning
     isDead = true;
   }
+
   @Override
   protected EnumParticleTypes getParticleType() {
     return EnumParticleTypes.BLOCK_CRACK;
   }
+
   @Override
   protected boolean spawnCustomParticles() {
     int i = this.getSlimeSize();
@@ -168,10 +215,12 @@ public class EntityDireSlime extends EntityMagmaCube {
     }
     return true;
   }
+
   @Override
   protected EntitySlime createInstance() {
     return new EntityDireSlime(this.world);
   }
+
   @Override
   @SideOnly(Side.CLIENT)
   public int getBrightnessForRender() {
@@ -186,6 +235,7 @@ public class EntityDireSlime extends EntityMagmaCube {
       return 0;
     }
   }
+
   @Override
   public float getBrightness() {
     int i = MathHelper.floor(this.posX);
@@ -199,21 +249,25 @@ public class EntityDireSlime extends EntityMagmaCube {
       return 0.0F;
     }
   }
+
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
     ConfigSpawnEntity.syncInstance(this, config.settings);
   }
+
   @Override
   protected int getAttackStrength() {
     int res = (int) getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
     return res;
   }
+
   @Override
   protected void setSize(float p_70105_1_, float p_70105_2_) {
     int i = this.getSlimeSize();
     super.setSize(i, i);
   }
+
   @Override
   public void onCollideWithPlayer(EntityPlayer player) {
     int i = getSlimeSize();
@@ -222,11 +276,15 @@ public class EntityDireSlime extends EntityMagmaCube {
       playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
     }
   }
+
   @Override
   protected float applyArmorCalculations(DamageSource ds, float dmg) {
-    if (!ds.isUnblockable()) { return Math.min(Math.max(dmg - 3 - this.getSlimeSize(), this.getSlimeSize()) / 2, dmg); }
+    if (!ds.isUnblockable()) {
+      return Math.min(Math.max(dmg - 3 - this.getSlimeSize(), this.getSlimeSize()) / 2, dmg);
+    }
     return dmg;
   }
+
   @Override
   protected ResourceLocation getLootTable() {
     return new ResourceLocation(Const.MODID, "entity/slime_block");

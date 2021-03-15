@@ -1,4 +1,5 @@
 package teamroots.emberroot.entity.hero;
+
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -29,21 +30,29 @@ import teamroots.emberroot.Const;
 import teamroots.emberroot.config.ConfigSpawnEntity;
 
 public class EntityFallenHero extends EntityMob {
+
   public static final String NAME = "hero";
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityFallenHero.class, EnumCreatureType.CREATURE);
+  public static boolean avoidCreepers;
+  public static boolean temptWithGold;
+
   public EntityFallenHero(World worldIn) {
     super(worldIn);
   }
+
   @Override
   protected void initEntityAI() {
     super.initEntityAI();
     this.tasks.addTask(1, new EntityAISwimming(this));//can swim but does not like it
     this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D, 0.0F));
     this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.0D, false));
-    this.tasks.addTask(3, new EntityAIAvoidEntity(this, EntityCreeper.class, 8.0F, 1.0D, 1.2D));
-    //   this.tasks.addTask(3, new EntityAIAvoidEntity(this, EntityPlayer.class, 8.0F, 1.0D, 1.2D));
-    //this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
-    this.tasks.addTask(3, new EntityAITempt(this, 1.25D, Items.GOLD_INGOT, false));
+    if (avoidCreepers) {
+      this.tasks.addTask(3, new EntityAIAvoidEntity<EntityCreeper>(this, EntityCreeper.class, 8.0F, 1.0D, 1.2D));
+    }
+    if (temptWithGold) {
+      this.tasks.addTask(3, new EntityAITempt(this, 1.25D, Items.GOLD_INGOT, false));
+    }
+    this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
     this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
     this.tasks.addTask(8, new EntityAILookIdle(this));
     this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
@@ -53,29 +62,18 @@ public class EntityFallenHero extends EntityMob {
     this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityVindicator.class, true));
     this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySilverfish.class, true));
   }
+
   @Override
   protected void applyEntityAttributes() {
     super.applyEntityAttributes();
     this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
-
-
-    this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.33000000417232513D);
-    
+    //    this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.33000000417232513D);
     ConfigSpawnEntity.syncInstance(this, config.settings);
-
-
-  
   }
-  @Override
 
-  public void onEntityUpdate()
-  {
-    // System.out.println("HERO onEntityUpdate "+this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getBaseValue());
-    
-    super.onEntityUpdate();
-  }
   @Override
   public IEntityLivingData onInitialSpawn(DifficultyInstance di, IEntityLivingData livingData) {
+    //TODO: armor odds in config?
     if (rand.nextDouble() < 0.7) {
       setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_BOOTS));
     }
@@ -99,10 +97,12 @@ public class EntityFallenHero extends EntityMob {
     }
     return super.onInitialSpawn(di, livingData);
   }
+
   @Override
   public ResourceLocation getLootTable() {
     return new ResourceLocation(Const.MODID, "entity/hero");
   }
+
   @Override
   public boolean isPreventingPlayerRest(EntityPlayer playerIn) {
     return false;
