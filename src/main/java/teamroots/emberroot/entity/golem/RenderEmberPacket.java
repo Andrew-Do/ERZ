@@ -1,8 +1,10 @@
 package teamroots.emberroot.entity.golem;
 
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderEmberPacket extends RenderEntity {
 
@@ -23,5 +25,13 @@ public class RenderEmberPacket extends RenderEntity {
   @Override
   public boolean canRenderName(Entity entity) {
     return false;
+  }
+
+  public static class Factory implements IRenderFactory<EntityGolemLaser> {
+
+    @Override
+    public Render<? super EntityGolemLaser> createRenderFor(RenderManager manager) {
+      return new RenderEmberPacket(manager);
+    }
   }
 }

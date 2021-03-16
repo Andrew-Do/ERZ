@@ -90,7 +90,7 @@ public class EntityAIMountedArrowAttack extends EntityAIBase {
       runAwayTimer--;
     }
     if (!runningAway && distToTargetSq <= attackRangeSq && timeTargetVisible >= 20) {
-      getNavigator().clearPathEntity();
+      getNavigator().clearPath();
     }
     else if (distToTargetSq > (attackRangeSq * 0.9)) {
       getNavigator().tryMoveToEntityLiving(attackTarget, getMoveSpeed());

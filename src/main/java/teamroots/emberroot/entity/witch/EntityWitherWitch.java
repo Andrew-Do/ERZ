@@ -25,6 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -60,8 +61,8 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
   private List<NBTTagCompound> loadedCats;
   private final EntityAIRangedAttack rangedAttackAI;
   private int noActiveTargetTime;
-  private int witherWitchMaxCats = 3;
-  private int witherWitchMinCats = 1;
+  public static int witherWitchMaxCats = 3;
+  public static int witherWitchMinCats = 1;
   public EntityWitherWitch(World world) {
     super(world);
     rangedAttackAI = new EntityAIRangedAttack(this, 1, 60, 10);
@@ -94,7 +95,7 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
   @Override
   public boolean isPotionApplicable(PotionEffect potion) {
     //    if(potion.getPotion().isBadEffect())
-    //TODO: make witch immune to ALL bad effect?s? WE COULD ?> yeah
+    //TODO: make witch immune to ALL bad effects? WE COULD > yeah
     return potion.getPotion() != MobEffects.WITHER && super.isPotionApplicable(potion);
   }
   @Override
@@ -102,7 +103,7 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     EntityLivingBase curTarget = this.getAttackTarget();
     super.setRevengeTarget(target);
     if (curTarget == target || world.isRemote || target == null) { return; }
-    float distToSrc = getDistanceToEntity(target);
+    float distToSrc = getDistance(target);
     if (distToSrc > getNavigator().getPathSearchRange() && distToSrc < 50) {
       getAttributeMap().getAttributeInstance(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(distToSrc + 2);
     }
@@ -203,7 +204,7 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
       attackTimer = getHeldItem(EnumHand.MAIN_HAND).getMaxItemUseDuration();
       EntityPotion entitypotion = new EntityPotion(world, this, potion);
       entitypotion.rotationPitch -= -20.0F;
-      entitypotion.setThrowableHeading(x, y + groundDistance * 0.2F, z, 0.75F, 8.0F);
+      entitypotion.shoot(x, y + groundDistance * 0.2F, z, 0.75F, 8.0F);
       if (world.isRemote == false) {
         world.spawnEntity(entitypotion);
       }
@@ -215,7 +216,7 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     //if its not a splash or lingering potion it will be an error
     EntityPotion entitypotion = new EntityPotion(world, this, potion);
     Vec3d lookVec = getLookVec();
-    entitypotion.setThrowableHeading(lookVec.x * 0.5, -1, lookVec.z * 0.5, 0.75F, 1.0F);
+    entitypotion.shoot(lookVec.x * 0.5, -1, lookVec.z * 0.5, 0.75F, 1.0F);
     world.spawnEntity(entitypotion);
     setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
     healTimer = 80;
@@ -247,7 +248,7 @@ public class EntityWitherWitch extends EntityMob implements IRangedAttackMob {
     cat.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(this)), null);
     cat.setOwner(this);
     cat.setPositionAndRotation(spawnLoc.x + 0.5, spawnLoc.y + 0.5, spawnLoc.z + 0.5, rotationYaw, 0);
-    if (MinecraftForge.EVENT_BUS.post(new LivingSpawnEvent.CheckSpawn(cat, world, (float) cat.posX, (float) cat.posY, (float) cat.posZ))) { return; }
+    if (MinecraftForge.EVENT_BUS.post(new LivingSpawnEvent.CheckSpawn(cat, world, (float) cat.posX, (float) cat.posY, (float) cat.posZ, (MobSpawnerBaseLogic) null))) { return; }
     if (!cat.getCanSpawnHere()) { return; }
     cats.add(cat);
     world.spawnEntity(cat);

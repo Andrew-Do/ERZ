@@ -1,6 +1,5 @@
 package teamroots.emberroot.util;
 import java.util.List;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -61,10 +60,7 @@ public class SpawnUtil {
   }
   public static boolean isLiquid(World world, int x, int y, int z) {
     IBlockState bs = world.getBlockState(VecUtil.bpos(x, y, z));
-    if (bs == null || bs.getBlock() == null) { return false; }
-    Block block = bs.getBlock();
-    if (block.getMaterial(bs).isLiquid()) { return true; }
-    return false;
+    return !(bs == null || bs.getMaterial() == null) && bs.getMaterial().isLiquid();
   }
   public static boolean isSpaceAvailableForSpawn(World worldObj, EntityLiving entity, EntityCreature asCreature, boolean checkEntityCollisions, boolean canSpawnInLiquid) {
     if (asCreature != null && asCreature.getBlockPathWeight(entity.getPosition()) < 0) { return false; }

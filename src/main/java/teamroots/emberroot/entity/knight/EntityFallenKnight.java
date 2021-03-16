@@ -105,7 +105,7 @@ public class EntityFallenKnight extends EntitySkeleton {
       System.out.println("attack on collide reset");
       getAiAttackOnCollide().resetTask();
       //      getAiArrowAttack().resetTask();
-      getNavigator().clearPathEntity();
+      getNavigator().clearPath();
       isMounted = isRidingMount();
     }
   }
@@ -216,23 +216,17 @@ public class EntityFallenKnight extends EntitySkeleton {
     return EntityUtil.isHardDifficulty(world);
   }
 
-  private ItemStack getWeaponForLevel() {
-    int swordLevel = isHardDifficulty() ? 2 : 1;//TODO: refactor
+  private ItemStack getWeaponForLevel(DifficultyInstance di) {
+    float swordLevel = isHardDifficulty() ? 2 : 1;
+    swordLevel *= 0.5F * di.getAdditionalDifficulty();
     if (swordLevel < 2) {
       swordLevel += rand.nextInt(isHardDifficulty() ? 3 : 2);
-      swordLevel = Math.min(swordLevel, 2);
     }
-    switch (swordLevel) {
-      case 0:
-        return new ItemStack(Items.WOODEN_SWORD);
-      case 1:
-        return new ItemStack(Items.STONE_SWORD);
-      case 2:
-        return new ItemStack(Items.IRON_SWORD);
-      case 4:
-        return new ItemStack(Items.DIAMOND_SWORD);
-    }
-    return new ItemStack(Items.IRON_SWORD);
+    if (swordLevel > 10) return new ItemStack(Items.DIAMOND_SWORD);
+    if (swordLevel > 6) return new ItemStack(Items.IRON_SWORD);
+    if (swordLevel > 3) return new ItemStack(Items.STONE_SWORD);
+    if (swordLevel > 1) return new ItemStack(Items.WOODEN_SWORD);
+    return ItemStack.EMPTY;
   }
 
   @Override
@@ -242,7 +236,7 @@ public class EntityFallenKnight extends EntitySkeleton {
     //getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).applyModifier(new AttributeModifier("Random spawn bonus", rand.nextGaussian() * 0.05D, 1));
     //    func_189768_a(SkeletonType.NORMAL);//skeleton types do not exist anymore in 1.11.2. so its always normal.
     addRandomArmor();
-    setItemStackToSlot(EntityEquipmentSlot.MAINHAND, getWeaponForLevel());
+    setItemStackToSlot(EntityEquipmentSlot.MAINHAND, getWeaponForLevel(di));
     setEnchantmentBasedOnDifficulty(di); //enchantEquipment();
     float f = di.getClampedAdditionalDifficulty();
     this.setCanPickUpLoot(this.rand.nextFloat() < 0.55F * f);

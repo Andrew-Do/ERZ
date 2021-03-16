@@ -3,7 +3,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import net.minecraft.block.Block;
+import java.util.stream.Collectors;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
@@ -71,7 +72,7 @@ public class EntityUtil {
       ent.tasks.removeTask(task.action);
       ent.tasks.addTask(task.priority, task.action);
     }
-    ent.getNavigator().clearPathEntity();
+    ent.getNavigator().clearPath();
   }
   public static IAttributeInstance removeModifier(EntityLivingBase ent, IAttribute p, UUID u) {
     IAttributeInstance att = ent.getEntityAttribute(p);
@@ -85,7 +86,13 @@ public class EntityUtil {
     AxisAlignedBB bounds = getBoundsAround(entity, maxRange);
     EntityPlayer nearest = (EntityPlayer) entity.getEntityWorld().findNearestEntityWithinAABB(EntityPlayer.class, bounds, entity);
     if (nearest == null) { return 1; }
-    return nearest.getDistanceSqToEntity(entity);
+    return nearest.getDistanceSq(entity);
+  }
+  public static List<EntityPlayer> getNonCreativePlayers(World world, AxisAlignedBB bounds) {
+    return world.getEntitiesWithinAABB(EntityPlayer.class, bounds)
+        .stream()
+        .filter(EntityUtil::isCreativePlayer)
+        .collect(Collectors.toList());
   }
   public static boolean isPlayerWithinRange(Entity entity, double range) {
     List<EntityPlayer> res = entity.getEntityWorld().getEntitiesWithinAABB(EntityPlayer.class, getBoundsAround(entity, range));
@@ -96,8 +103,7 @@ public class EntityUtil {
     if (collides == null || collides.isEmpty()) { return false; }
     BlockPos groundPos = entity.getPosition().down();
     IBlockState bs = entity.getEntityWorld().getBlockState(groundPos);
-    Block block = bs.getBlock();
-    if (block.getMaterial(bs).isLiquid()) { return false; }
+    if (bs.getMaterial().isLiquid()) { return false; }
     return true;
   }
   public static BlockPos findRandomLandingSurface(EntityCreature entity, int searchRange, int minY, int maxY, int searchAttempts) {
@@ -152,18 +158,17 @@ public class EntityUtil {
     if (!SpawnUtil.isSpaceAvailableForSpawn(world, ent, false, false)) { return false; }
     BlockPos bellow = new BlockPos(x, y, z).down();
     IBlockState bs = world.getBlockState(bellow);
-    Block block = bs.getBlock();
-    if (!block.getMaterial(bs).isSolid()) { return false; }
-    AxisAlignedBB collides = block.getCollisionBoundingBox(bs, world, bellow);
+    if (!bs.getMaterial().isSolid()) { return false; }
+    AxisAlignedBB collides = bs.getCollisionBoundingBox(world, bellow);
     return collides != null;
   }
   public static void setFollow(EntityLivingBase entity, double s) {
     entity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32);
   }
-//  public static void setSpeed(EntityLivingBase entity, double s) { 
-//    entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(s);
-////    entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).notifyAll();
-//  }
+  public static void setSpeed(EntityLivingBase entity, double s) { 
+    entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(s);
+//    entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).notifyAll();
+  }
   public static void setMaxHealth(EntityLivingBase entity, double maxHealth) {
     entity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxHealth);
 //    entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).notifyAll();
@@ -175,5 +180,8 @@ public class EntityUtil {
       ai = entity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE);
     }
     ai.setBaseValue(attackDamage);
+  }
+  public static boolean isCreativePlayer(EntityLivingBase entity) {
+    return entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative();
   }
 }

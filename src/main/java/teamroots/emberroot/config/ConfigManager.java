@@ -100,10 +100,10 @@ public class ConfigManager {
     //    EntityFallenKnight.CHANCE_BOW = config.getFloat("ChanceBow", EntityFallenKnight.config.category, 0.4F, 0, 1, "Chance to spawn with a bow.");
     EntityFallenKnight.fallenKnightChanceMounted = config.getFloat("ChanceSpawnsWithMount", EntityFallenKnight.config.category, 0.75F, 0, 1, "Percentage chance this spawns with a mount.");
     EntityOwl.temptSpiderEye = config.getBoolean("TemptAndBreedSpiderEye", EntityOwl.config.category, true, "Spider Eye used to tempt and breed.");
+    EntityOwl.owlSpiderDamageMultiplier = config.getFloat("SpiderDamageMult", EntityOwl.config.category, 0.5F, 0F, 100F, "The damage multiplier that owls should do to spiders");
+    EntityOwl.hootInterval = config.getInt("HootInterval", EntityOwl.config.category, 5, 0, Integer.MAX_VALUE, "The hoot interval");
     EntitySprout.canTempt = config.getBoolean("CanTempt", EntitySprout.config.category, true, "Tempt this with seeds.");
     EntityDireWolf.direWolfPackAttackEnabled = config.getBoolean("PackAttack", EntityDireWolf.config.category, true, "They attack as a pack.");
-    EntityTimberWolf.attackSkeleton = config.getBoolean("AttackSkeleton", EntityTimberWolf.config.category, true, "Attacks Skeletons.");
-    EntityTimberWolf.attackSkeleton = config.getBoolean("AttackSkeleton", EntityTimberWolf.config.category, true, "Attacks Skeletons.");
     EntityWitherWitch.witherWitchMaxCats = config.getInt("maxCats", EntityWitherWitch.config.category, 3, 0, 10, "Max number of pet cats this can spawn with; zero to disable");
     EntityWitherWitch.witherWitchMinCats = config.getInt("minCats", EntityWitherWitch.config.category, 1, 0, 10, "Min number of pet cats this can spawn with");
     EntitySpriteGuardianBoss.speedup = config.getFloat("speedup", EntitySpriteGuardianBoss.config.category, 1F, 0F,100F,"The speedup applied to the boss as it's health gets lower. " +
@@ -118,6 +118,9 @@ public class ConfigManager {
     EntityGolemLaser.speedup = config.getFloat("z_laser_speedup", EntityAncientGolem.config.category, 1F, 0F,100F,"The speedup applied to the laser. ie 3.0 = 300% speed");
     EntityGolemLaser.dmgmultiplier = config.getFloat("z_laser_dmgmult", EntityAncientGolem.config.category, 1F, 0F,100F,"The dmgmult applied to the laser. ie 3.0 = 300% dmg");
 
+    EntityConcussionCreeper.concussionCreeperConfusionDuration = config.getInt("ConfusionDuration", EntityConcussionCreeper.config.category, 600, 1, Integer.MAX_VALUE, "The length of the confusion effect, in ticks, caused by the creeper");
+    EntityConcussionCreeper.concussionCreeperExplosionRange = config.getInt("ExplosionRange", EntityConcussionCreeper.config.category, 16, 1, Integer.MAX_VALUE, "The range of the explosion caused by the creeper");
+    EntityConcussionCreeper.concussionCreeperMaxTeleportRange = config.getInt("TeleportRange", EntityConcussionCreeper.config.category, 16, 0, Integer.MAX_VALUE, "The max range of the creeper teleport");
 
     if (config.hasChanged()) {
       config.save();

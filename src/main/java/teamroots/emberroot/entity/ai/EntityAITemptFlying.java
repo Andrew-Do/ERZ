@@ -83,7 +83,7 @@ public class EntityAITemptFlying extends EntityAIBase {
    */
   public boolean shouldContinueExecuting() {
     if (this.scaredByPlayerMovement) {
-      if (this.temptedEntity.getDistanceSqToEntity(this.temptingPlayer) < RANGE) {
+      if (this.temptedEntity.getDistanceSq(this.temptingPlayer) < RANGE) {
         if (this.temptingPlayer.getDistanceSq(this.targetX, this.targetY, this.targetZ) > 0.010000000000000002D) {
           return false;
         }
@@ -117,13 +117,13 @@ public class EntityAITemptFlying extends EntityAIBase {
    */
   public void resetTask() {
     //somehow it keeps getting cancelled/reset. block if player is nearby
-    //      if (this.temptingPlayer != null && this.temptedEntity.getDistanceSqToEntity(this.temptingPlayer) < 36.0D){
+    //      if (this.temptingPlayer != null && this.temptedEntity.getDistanceSq(this.temptingPlayer) < 36.0D){
     //        System.out.println("reset task: flying tempt CANCELLED");
     //        return;
     //      }
     //  System.out.println("reset task: flying tempt");
     this.temptingPlayer = null;
-    this.temptedEntity.getNavigator().clearPathEntity();
+    this.temptedEntity.getNavigator().clearPath();
     this.delayTemptCounter = 5;
     this.isRunning = false;
   }
@@ -133,9 +133,9 @@ public class EntityAITemptFlying extends EntityAIBase {
    */
   public void updateTask() {
     this.temptedEntity.getLookHelper().setLookPositionWithEntity(this.temptingPlayer, (float) (this.temptedEntity.getHorizontalFaceSpeed() + 20), (float) this.temptedEntity.getVerticalFaceSpeed());
-    //        if (this.temptedEntity.getDistanceSqToEntity(this.temptingPlayer) < 1.25D)
+    //        if (this.temptedEntity.getDistanceSq(this.temptingPlayer) < 1.25D)
     //        {
-    //          //  this.temptedEntity.getNavigator().clearPathEntity();
+    //          //  this.temptedEntity.getNavigator().clearPath();
     //        }
     //        else
     //        { 

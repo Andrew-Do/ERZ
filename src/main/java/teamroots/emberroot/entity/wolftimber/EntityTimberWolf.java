@@ -76,12 +76,12 @@ public class EntityTimberWolf extends EntityTameable {
     this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
     this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
     this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true, new Class[0]));
-    this.targetTasks.addTask(4, new EntityAITargetNonTamed(this, EntityAnimal.class, false, new Predicate<Entity>() {
+    this.targetTasks.addTask(4, new EntityAITargetNonTamed<>(this, EntityAnimal.class, false, new Predicate<Entity>() {
       public boolean apply(@Nullable Entity p_apply_1_) {
         return p_apply_1_ instanceof EntitySheep || p_apply_1_ instanceof EntityRabbit || p_apply_1_ instanceof EntityDeer;
       }
     }));
-    this.targetTasks.addTask(5, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, false));
+    this.targetTasks.addTask(5, new EntityAINearestAttackableTarget<>(this, EntitySkeleton.class, false));
   }
   @Nullable
   protected ResourceLocation getLootTable() {
@@ -114,7 +114,7 @@ public class EntityTimberWolf extends EntityTameable {
       if (this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(stack)) {
         this.aiSit.setSitting(!this.isSitting());
         this.isJumping = false;
-        this.navigator.clearPathEntity();
+        this.navigator.clearPath();
         this.setAttackTarget((EntityLivingBase) null);
       }
     }

@@ -56,11 +56,11 @@ public class EntityFallenHero extends EntityMob {
     this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
     this.tasks.addTask(8, new EntityAILookIdle(this));
     this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-    this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityZombie.class, true));
-    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, true));
-    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySpider.class, true));
-    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityVindicator.class, true));
-    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySilverfish.class, true));
+    this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityZombie.class, true));
+    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntitySkeleton.class, true));
+    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntitySpider.class, true));
+    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityVindicator.class, true));
+    this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntitySilverfish.class, true));
   }
 
   @Override
@@ -73,15 +73,15 @@ public class EntityFallenHero extends EntityMob {
 
   @Override
   public IEntityLivingData onInitialSpawn(DifficultyInstance di, IEntityLivingData livingData) {
-    //TODO: armor odds in config?
+    //TODO: armor odds in loot table?
     if (rand.nextDouble() < 0.7) {
-      setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_BOOTS));
+      setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(Items.GOLDEN_BOOTS));
     }
     if (rand.nextDouble() < 0.6) {
       setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
     }
     if (rand.nextDouble() < 0.4) {
-      setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_BOOTS));
+      setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS));
     }
     if (rand.nextDouble() < 0.5) {
       setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));

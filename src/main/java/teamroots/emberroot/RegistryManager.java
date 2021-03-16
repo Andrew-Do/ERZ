@@ -2,7 +2,6 @@ package teamroots.emberroot;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -179,7 +178,7 @@ public class RegistryManager {
     RenderingRegistry.registerEntityRenderingHandler(EntitySprout.class, new RenderSprout.Factory());
     RenderingRegistry.registerEntityRenderingHandler(EntityFairy.class, new RenderFairy.Factory());
     RenderingRegistry.registerEntityRenderingHandler(EntityRainbowSlime.class, new RenderWaterSlime.Factory());
-    RenderingRegistry.registerEntityRenderingHandler(EntityGolemLaser.class, new RenderEmberPacket(Minecraft.getMinecraft().getRenderManager()));
+    RenderingRegistry.registerEntityRenderingHandler(EntityGolemLaser.class, new RenderEmberPacket.Factory());
     RenderingRegistry.registerEntityRenderingHandler(EntityAncientGolem.class, new RenderAncientGolem.Factory());
     RenderingRegistry.registerEntityRenderingHandler(EntityFallenHero.class, new RenderFallenHero.Factory());
     RenderingRegistry.registerEntityRenderingHandler(EntityConcussionCreeper.class, new RenderConcussionCreeper.Factory());

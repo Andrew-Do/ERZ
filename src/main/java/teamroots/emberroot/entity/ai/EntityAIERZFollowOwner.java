@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
-public class EntityAIFollowOwner extends EntityAIBase {
+public class EntityAIERZFollowOwner extends EntityAIBase {
 
   /** The child that is following its parent. */
   IOwnable<? extends EntityCreature, ? extends EntityLivingBase> owned;
@@ -14,14 +14,12 @@ public class EntityAIFollowOwner extends EntityAIBase {
   private double maxDistanceSq;
 
   /**
-   * TODO: has same name as vanilla class so i should rename
-   * 
    * @param owned
    * @param minDist
    * @param maxDist
    * @param followSpeed
    */
-  public EntityAIFollowOwner(IOwnable<? extends EntityCreature, ? extends EntityLivingBase> owned, double minDist, double maxDist, double followSpeed) {
+  public EntityAIERZFollowOwner(IOwnable<? extends EntityCreature, ? extends EntityLivingBase> owned, double minDist, double maxDist, double followSpeed) {
     this.owned = owned;
     minDistanceSq = minDist * minDist;
     maxDistanceSq = maxDist * maxDist;
@@ -54,7 +52,7 @@ public class EntityAIFollowOwner extends EntityAIBase {
   }
 
   private double getDistanceSqFromOwner() {
-    double distance = owned.asEntity().getDistanceSqToEntity(owned.getOwner());
+    double distance = owned.asEntity().getDistanceSq(owned.getOwner());
     return distance;
   }
 
@@ -74,7 +72,7 @@ public class EntityAIFollowOwner extends EntityAIBase {
     }
     double distance = getDistanceSqFromOwner();
     if (distance < minDistanceSq) {
-      owned.asEntity().getNavigator().clearPathEntity();
+      owned.asEntity().getNavigator().clearPath();
     }
     if (--pathingTimer <= 0) {
       pathingTimer = 10;

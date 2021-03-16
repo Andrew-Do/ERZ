@@ -12,8 +12,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import teamroots.emberroot.EmberRootZoo;
-import teamroots.emberroot.config.ConfigSpawnEntity;
-import teamroots.emberroot.entity.spriteguardian.EntitySpriteGuardianBoss;
 import teamroots.emberroot.util.Util;
 
 public class EntitySpriteProjectile extends EntityFlying {// implements IRangedAttackMob {

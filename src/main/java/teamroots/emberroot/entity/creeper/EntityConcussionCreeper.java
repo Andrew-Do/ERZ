@@ -1,6 +1,5 @@
 package teamroots.emberroot.entity.creeper;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
@@ -21,7 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import teamroots.emberroot.Const;
 import teamroots.emberroot.EmberRootZoo;
 import teamroots.emberroot.config.ConfigSpawnEntity;
@@ -43,22 +41,13 @@ public class EntityConcussionCreeper extends EntityCreeper {
   }
 
   public static final String NAME = "creeper";
-  private static final int concussionCreeperExplosionRange = 16;//TODO: CONFIGS FOR THESE
-  private static final int concussionCreeperMaxTeleportRange = 16;
-  private static final int concussionCreeperConfusionDuration = 600;
+  public static int concussionCreeperExplosionRange = 16;
+  public static int concussionCreeperMaxTeleportRange = 16;
+  public static int concussionCreeperConfusionDuration = 600;
   public static ConfigSpawnEntity config = new ConfigSpawnEntity(EntityConcussionCreeper.class, EnumCreatureType.MONSTER);
-  private Field fTimeSinceIgnited;
-  private Field fFuseTime;
 
   public EntityConcussionCreeper(World world) {
     super(world);
-    try {
-      fTimeSinceIgnited = ReflectionHelper.findField(EntityCreeper.class, "timeSinceIgnited", "field_70833_d");
-      fFuseTime = ReflectionHelper.findField(EntityCreeper.class, "fuseTime", "field_82225_f");
-    }
-    catch (Exception e) {
-      EmberRootZoo.instance.logger.error("Could not create ender creeper  logic as fields not found");
-    }
   }
 
   public Integer getVariant() {
@@ -85,7 +74,7 @@ public class EntityConcussionCreeper extends EntityCreeper {
   private void spawnLingeringPotion(PotionType type) {
     ItemStack potion = PotionUtils.addPotionToItemStack(new ItemStack(Items.LINGERING_POTION), type);
     EntityPotion entitypotion = new EntityPotion(world, this, potion);
-    entitypotion.setThrowableHeading(0, 1, 0, 0.75F, 1.0F);
+    entitypotion.shoot(0, 1, 0, 0.75F, 1.0F);
     if (world.isRemote == false) {
       world.spawnEntity(entitypotion);
     }
@@ -94,10 +83,8 @@ public class EntityConcussionCreeper extends EntityCreeper {
   @Override
   public void onUpdate() {
     if (isEntityAlive()) {
-      int timeSinceIgnited = getTimeSinceIgnited();
-      int fuseTime = getFuseTime();
       if (timeSinceIgnited >= fuseTime - 1) {
-        setTimeSinceIgnited(0);
+        timeSinceIgnited = 0;
         int range = concussionCreeperExplosionRange;
         switch (this.getVariantEnum()) {
           case POISON:
@@ -137,44 +124,6 @@ public class EntityConcussionCreeper extends EntityCreeper {
       }
     }
     super.onUpdate();
-  }
-
-  private void setTimeSinceIgnited(int i) {
-    if (fTimeSinceIgnited == null) {
-      return;
-    }
-    try {
-      fTimeSinceIgnited.setInt(this, i);
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  private int getTimeSinceIgnited() {
-    if (fTimeSinceIgnited == null) {
-      return 0;
-    }
-    try {
-      return fTimeSinceIgnited.getInt(this);
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-      return 0;
-    }
-  }
-
-  private int getFuseTime() {
-    if (fFuseTime == null) {
-      return 0;
-    }
-    try {
-      return fFuseTime.getInt(this);
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-      return 0;
-    }
   }
 
   @Override

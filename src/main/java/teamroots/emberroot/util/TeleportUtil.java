@@ -17,6 +17,7 @@ public class TeleportUtil {
   private static final int DEFAULT_RND_TP_DISTANCE = 16;
   private static Random rand = new Random();
   public static boolean teleportRandomly(EntityLivingBase entity, int distance) {
+    if (distance <= 0) return true;
     double d0 = entity.posX + (rand.nextDouble() - 0.5D) * distance;
     double d1 = entity.posY + rand.nextInt(distance + 1) - distance / 2;
     double d2 = entity.posZ + (rand.nextDouble() - 0.5D) * distance;
@@ -55,7 +56,7 @@ public class TeleportUtil {
       boolean foundGround = false;
       while (!foundGround && yInt > 2) {
         IBlockState bs = worldObj.getBlockState(new BlockPos(xInt, yInt - 1, zInt));
-        if (bs != null && bs.getBlock() != null && bs.getBlock().getMaterial(bs).blocksMovement()) {
+        if (bs != null && bs.getBlock() != null && bs.getMaterial().blocksMovement()) {
           foundGround = true;
         }
         else {

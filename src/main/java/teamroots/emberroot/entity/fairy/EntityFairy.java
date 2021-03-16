@@ -138,7 +138,7 @@ public class EntityFairy extends EntityFlying {
 
   @Nullable
   public UUID getOwnerId() {
-    return (UUID) ((Optional) this.dataManager.get(OWNER_UNIQUE_ID)).orNull();
+    return (UUID) ((Optional<UUID>) this.dataManager.get(OWNER_UNIQUE_ID)).orNull();
   }
 
   public void setTamed(boolean tamed) {
@@ -271,9 +271,9 @@ public class EntityFairy extends EntityFlying {
         double targX = p.posX;
         double targY = p.posY + p.height;
         double targZ = p.posZ;
-        int count = 1;
+        // int count = 1;
         double followRange = config.settings.followRange;
-        if (this.getDistanceSqToEntity(p) < followRange) {
+        if (this.getDistanceSq(p) < followRange) {
           //this.playTameEffect(2);
           List<EntityFairy> list = world.getEntitiesWithinAABB(EntityFairy.class, p.getEntityBoundingBox().expand(followRange, followRange, followRange));
           List<EntityFairy> prunedList = new ArrayList<EntityFairy>();
@@ -296,7 +296,7 @@ public class EntityFairy extends EntityFlying {
             }
             else {
               if (prunedList.get(i).getDataManager().get(variant) == getDataManager().get(variant)) {
-                count++;
+                // count++;
               }
             }
           }

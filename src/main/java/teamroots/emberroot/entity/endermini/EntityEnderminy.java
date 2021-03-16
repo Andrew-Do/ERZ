@@ -3,7 +3,6 @@ package teamroots.emberroot.entity.endermini;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
@@ -220,8 +219,7 @@ public class EntityEnderminy extends EntityMob {
       boolean foundGround = false;
       while (!foundGround && yInt > 0) {
         IBlockState bs = world.getBlockState(new BlockPos(xInt, yInt - 1, zInt));
-        Block block = bs.getBlock();
-        if (block.getMaterial(bs).blocksMovement()) {
+        if (bs.getMaterial().blocksMovement()) {
           foundGround = true;
         }
         else {
@@ -426,12 +424,12 @@ public class EntityEnderminy extends EntityMob {
       else {
         if (targetEntity != null) {
           if (targetEntity instanceof EntityPlayer && enderminy.shouldAttackPlayer((EntityPlayer) this.targetEntity)) {
-            if (targetEntity.getDistanceSqToEntity(enderminy) < 16.0D) {
+            if (targetEntity.getDistanceSq(enderminy) < 16.0D) {
               enderminy.teleportRandomly();
             }
             teleportDelay = 0;
           }
-          else if (targetEntity.getDistanceSqToEntity(enderminy) > 256.0D && this.teleportDelay++ >= 30 && enderminy.teleportToEntity(targetEntity)) {
+          else if (targetEntity.getDistanceSq(enderminy) > 256.0D && this.teleportDelay++ >= 30 && enderminy.teleportToEntity(targetEntity)) {
             teleportDelay = 0;
           }
         }

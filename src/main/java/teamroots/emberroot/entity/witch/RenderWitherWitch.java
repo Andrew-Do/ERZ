@@ -1,5 +1,8 @@
 package teamroots.emberroot.entity.witch;
+
 import org.lwjgl.opengl.GL11;
+
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelWitch;
 import net.minecraft.client.renderer.GlStateManager;
@@ -10,7 +13,9 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
@@ -55,6 +60,7 @@ public class RenderWitherWitch extends RenderLiving<EntityWitherWitch> {
     public LayerHeldItemWitch(RenderWitherWitch witchRendererIn) {
       this.witchRenderer = witchRendererIn;
     }
+    @SuppressWarnings("deprecation")
     public void doRenderLayer(EntityWitherWitch entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_,
         float p_177141_6_, float p_177141_7_, float scale) {
       ItemStack itemstack = entitylivingbaseIn.getHeldItem(EnumHand.MAIN_HAND);
@@ -71,14 +77,13 @@ public class RenderWitherWitch extends RenderLiving<EntityWitherWitch> {
         GlStateManager.translate(-0.0625F, 0.53125F, 0.21875F);
         Item item = itemstack.getItem();
         Minecraft minecraft = Minecraft.getMinecraft();
-        //TODO: method is gone, so skip?
-        //        if (item instanceof ItemBlock && minecraft.getBlockRendererDispatcher().isEntityBlockAnimated(Block.getBlockFromItem(item))) {
-        //          GlStateManager.translate(0.0F, 0.0625F, -0.25F);
-        //          GlStateManager.rotate(30.0F, 1.0F, 0.0F, 0.0F);
-        //          GlStateManager.rotate(-5.0F, 0.0F, 1.0F, 0.0F);
-        //          float f4 = 0.375F;
-        //          GlStateManager.scale(f4, -f4, f4);
-        //        } else 
+        if (item instanceof ItemBlock && Block.getBlockFromItem(item).getRenderType(null) == EnumBlockRenderType.ENTITYBLOCK_ANIMATED) {
+            GlStateManager.translate(0.0F, 0.0625F, -0.25F);
+            GlStateManager.rotate(30.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(-5.0F, 0.0F, 1.0F, 0.0F);
+            float f4 = 0.375F;
+            GlStateManager.scale(f4, -f4, f4);
+        } else 
         if (item == Items.BOW) {
           GlStateManager.translate(0.0F, 0.125F, -0.125F);
           GlStateManager.rotate(-45.0F, 0.0F, 1.0F, 0.0F);

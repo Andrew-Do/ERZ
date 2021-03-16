@@ -90,7 +90,7 @@ public class EntityAIAttackOnCollideAggressive extends EntityAIBase {
 
   @Override
   public void resetTask() {
-    attacker.getNavigator().clearPathEntity();
+    attacker.getNavigator().clearPath();
   }
 
   /**
