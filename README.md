@@ -9,7 +9,7 @@ Includes some open source code by Elucent and CrazyPants.  See citations within 
 -------------------------------------------
 Desired ROTN Changes
 -------------------------------------------
-1. NOT FINISHED - Renegotiate?: All fae mobs have bugged targeting - when they lose aggro, they just circle back and forth endlessly and do not return to wandering They just glide back and forth endlessly, unable to stop targeting their nonexistent target.
+1. Done: All fae mobs have bugged targeting - when they lose aggro, they just circle back and forth endlessly and do not return to wandering They just glide back and forth endlessly, unable to stop targeting their nonexistent target.
 2. Done: The Sprite Projectile needs a clearer sound effect/slower travel time for quality of life (can replace empty sound files. can change speed in config)
 3. Done: Config to disable taming faeries with glowstone
 5. Done: [If possible] New AI/behavior for Guardian of Sprites: Faster at lower health (can change speed in config)
